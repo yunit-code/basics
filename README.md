@@ -1,4 +1,4 @@
-# layout
+# console
 
 ## Project setup
 ```

@@ -575,7 +575,9 @@ export default {
         //开发模式下不执行此事件
         return;
       }
-      that.isLoading = true;
+      if(that.propData.openLoading){
+        that.isLoading = true;
+      }
       //获取所有的URL参数、页面ID（pageId）、以及所有组件的返回值（用范围值去调用IDM提供的方法取出所有的组件值）
       let urlObject = window.IDM.url.queryObject(),
       pageId = window.IDM.broadcast&&window.IDM.broadcast.pageModule?window.IDM.broadcast.pageModule.id:"";

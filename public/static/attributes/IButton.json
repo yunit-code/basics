@@ -116,6 +116,13 @@
                         }
                     ],
                     "default": "primary"
+                },
+                {
+                    "type": "switch",
+                    "layoutType": "inline",
+                    "text": "加载状态",
+                    "desc":"开启将启用点击出现loading状态，需要在自定义方法中关闭才行（ctx._this.isLoading=false）",
+                    "bindKey": "openLoading"
                 }
             ]
         },

@@ -64,7 +64,7 @@ export default {
           switch (key) {
             case "bgColorActive":
               if(element&&element.hex8){
-                styleObject["background-color"]=element.hex8;
+                styleObject["background-color"]=IDM.hex8ToRgbaString(element.hex8);
               }
               break;
             case "bgImgUrlActive":
@@ -91,28 +91,28 @@ export default {
                 styleObject["border-top-width"]=element.border.top.width+element.border.top.widthUnit;
                 styleObject["border-top-style"]=element.border.top.style;
                 if(element.border.top.colors.hex8){
-                  styleObject["border-top-color"]=element.border.top.colors.hex8;
+                  styleObject["border-top-color"]=IDM.hex8ToRgbaString(element.border.top.colors.hex8);
                 }
               }
               if(element.border.right.width>0){
                 styleObject["border-right-width"]=element.border.right.width+element.border.right.widthUnit;
                 styleObject["border-right-style"]=element.border.right.style;
                 if(element.border.right.colors.hex8){
-                  styleObject["border-right-color"]=element.border.right.colors.hex8;
+                  styleObject["border-right-color"]=IDM.hex8ToRgbaString(element.border.right.colors.hex8);
                 }
               }
               if(element.border.bottom.width>0){
                 styleObject["border-bottom-width"]=element.border.bottom.width+element.border.bottom.widthUnit;
                 styleObject["border-bottom-style"]=element.border.bottom.style;
                 if(element.border.bottom.colors.hex8){
-                  styleObject["border-bottom-color"]=element.border.bottom.colors.hex8;
+                  styleObject["border-bottom-color"]=IDM.hex8ToRgbaString(element.border.bottom.colors.hex8);
                 }
               }
               if(element.border.left.width>0){
                 styleObject["border-left-width"]=element.border.left.width+element.border.left.widthUnit;
                 styleObject["border-left-style"]=element.border.left.style;
                 if(element.border.left.colors.hex8){
-                  styleObject["border-left-color"]=element.border.left.colors.hex8;
+                  styleObject["border-left-color"]=IDM.hex8ToRgbaString(element.border.left.colors.hex8);
                 }
               }
               
@@ -124,7 +124,7 @@ export default {
             case "fontActive":
               styleObject["font-family"]=element.fontFamily;
               if(element.fontColors.hex8){
-                styleObject["color"]=element.fontColors.hex8;
+                styleObject["color"]=IDM.hex8ToRgbaString(element.fontColors.hex8);
               }
               styleObject["font-weight"]=element.fontWeight&&element.fontWeight.split(" ")[0];
               styleObject["font-style"]=element.fontStyle;
@@ -170,7 +170,7 @@ export default {
           switch (key) {
             case "bgColorFocus":
               if(element&&element.hex8){
-                styleObject["background-color"]=element.hex8;
+                styleObject["background-color"]=IDM.hex8ToRgbaString(element.hex8);
               }
               break;
             case "bgImgUrlFocus":
@@ -197,28 +197,28 @@ export default {
                 styleObject["border-top-width"]=element.border.top.width+element.border.top.widthUnit;
                 styleObject["border-top-style"]=element.border.top.style;
                 if(element.border.top.colors.hex8){
-                  styleObject["border-top-color"]=element.border.top.colors.hex8;
+                  styleObject["border-top-color"]=IDM.hex8ToRgbaString(element.border.top.colors.hex8);
                 }
               }
               if(element.border.right.width>0){
                 styleObject["border-right-width"]=element.border.right.width+element.border.right.widthUnit;
                 styleObject["border-right-style"]=element.border.right.style;
                 if(element.border.right.colors.hex8){
-                  styleObject["border-right-color"]=element.border.right.colors.hex8;
+                  styleObject["border-right-color"]=IDM.hex8ToRgbaString(element.border.right.colors.hex8);
                 }
               }
               if(element.border.bottom.width>0){
                 styleObject["border-bottom-width"]=element.border.bottom.width+element.border.bottom.widthUnit;
                 styleObject["border-bottom-style"]=element.border.bottom.style;
                 if(element.border.bottom.colors.hex8){
-                  styleObject["border-bottom-color"]=element.border.bottom.colors.hex8;
+                  styleObject["border-bottom-color"]=IDM.hex8ToRgbaString(element.border.bottom.colors.hex8);
                 }
               }
               if(element.border.left.width>0){
                 styleObject["border-left-width"]=element.border.left.width+element.border.left.widthUnit;
                 styleObject["border-left-style"]=element.border.left.style;
                 if(element.border.left.colors.hex8){
-                  styleObject["border-left-color"]=element.border.left.colors.hex8;
+                  styleObject["border-left-color"]=IDM.hex8ToRgbaString(element.border.left.colors.hex8);
                 }
               }
               
@@ -230,7 +230,7 @@ export default {
             case "fontFocus":
               styleObject["font-family"]=element.fontFamily;
               if(element.fontColors.hex8){
-                styleObject["color"]=element.fontColors.hex8;
+                styleObject["color"]=IDM.hex8ToRgbaString(element.fontColors.hex8);
               }
               styleObject["font-weight"]=element.fontWeight&&element.fontWeight.split(" ")[0];
               styleObject["font-style"]=element.fontStyle;
@@ -276,7 +276,7 @@ export default {
           switch (key) {
             case "bgColorHover":
               if(element&&element.hex8){
-                styleObject["background-color"]=element.hex8;
+                styleObject["background-color"]=IDM.hex8ToRgbaString(element.hex8);
               }
               break;
             case "bgImgUrlHover":
@@ -303,28 +303,28 @@ export default {
                 styleObject["border-top-width"]=element.border.top.width+element.border.top.widthUnit;
                 styleObject["border-top-style"]=element.border.top.style;
                 if(element.border.top.colors.hex8){
-                  styleObject["border-top-color"]=element.border.top.colors.hex8;
+                  styleObject["border-top-color"]=IDM.hex8ToRgbaString(element.border.top.colors.hex8);
                 }
               }
               if(element.border.right.width>0){
                 styleObject["border-right-width"]=element.border.right.width+element.border.right.widthUnit;
                 styleObject["border-right-style"]=element.border.right.style;
                 if(element.border.right.colors.hex8){
-                  styleObject["border-right-color"]=element.border.right.colors.hex8;
+                  styleObject["border-right-color"]=IDM.hex8ToRgbaString(element.border.right.colors.hex8);
                 }
               }
               if(element.border.bottom.width>0){
                 styleObject["border-bottom-width"]=element.border.bottom.width+element.border.bottom.widthUnit;
                 styleObject["border-bottom-style"]=element.border.bottom.style;
                 if(element.border.bottom.colors.hex8){
-                  styleObject["border-bottom-color"]=element.border.bottom.colors.hex8;
+                  styleObject["border-bottom-color"]=IDM.hex8ToRgbaString(element.border.bottom.colors.hex8);
                 }
               }
               if(element.border.left.width>0){
                 styleObject["border-left-width"]=element.border.left.width+element.border.left.widthUnit;
                 styleObject["border-left-style"]=element.border.left.style;
                 if(element.border.left.colors.hex8){
-                  styleObject["border-left-color"]=element.border.left.colors.hex8;
+                  styleObject["border-left-color"]=IDM.hex8ToRgbaString(element.border.left.colors.hex8);
                 }
               }
               
@@ -336,7 +336,7 @@ export default {
             case "fontHover":
               styleObject["font-family"]=element.fontFamily;
               if(element.fontColors.hex8){
-                styleObject["color"]=element.fontColors.hex8;
+                styleObject["color"]=IDM.hex8ToRgbaString(element.fontColors.hex8);
               }
               styleObject["font-weight"]=element.fontWeight&&element.fontWeight.split(" ")[0];
               styleObject["font-style"]=element.fontStyle;
@@ -382,7 +382,7 @@ export default {
           switch (key) {
             case "bgColorDefault":
               if(element&&element.hex8){
-                styleObject["background-color"]=element.hex8;
+                styleObject["background-color"]=IDM.hex8ToRgbaString(element.hex8);
               }
               break;
             case "bgImgUrlDefault":
@@ -409,28 +409,28 @@ export default {
                 styleObject["border-top-width"]=element.border.top.width+element.border.top.widthUnit;
                 styleObject["border-top-style"]=element.border.top.style;
                 if(element.border.top.colors.hex8){
-                  styleObject["border-top-color"]=element.border.top.colors.hex8;
+                  styleObject["border-top-color"]=IDM.hex8ToRgbaString(element.border.top.colors.hex8);
                 }
               }
               if(element.border.right.width>0){
                 styleObject["border-right-width"]=element.border.right.width+element.border.right.widthUnit;
                 styleObject["border-right-style"]=element.border.right.style;
                 if(element.border.right.colors.hex8){
-                  styleObject["border-right-color"]=element.border.right.colors.hex8;
+                  styleObject["border-right-color"]=IDM.hex8ToRgbaString(element.border.right.colors.hex8);
                 }
               }
               if(element.border.bottom.width>0){
                 styleObject["border-bottom-width"]=element.border.bottom.width+element.border.bottom.widthUnit;
                 styleObject["border-bottom-style"]=element.border.bottom.style;
                 if(element.border.bottom.colors.hex8){
-                  styleObject["border-bottom-color"]=element.border.bottom.colors.hex8;
+                  styleObject["border-bottom-color"]=IDM.hex8ToRgbaString(element.border.bottom.colors.hex8);
                 }
               }
               if(element.border.left.width>0){
                 styleObject["border-left-width"]=element.border.left.width+element.border.left.widthUnit;
                 styleObject["border-left-style"]=element.border.left.style;
                 if(element.border.left.colors.hex8){
-                  styleObject["border-left-color"]=element.border.left.colors.hex8;
+                  styleObject["border-left-color"]=IDM.hex8ToRgbaString(element.border.left.colors.hex8);
                 }
               }
               
@@ -442,7 +442,7 @@ export default {
             case "fontDefault":
               styleObject["font-family"]=element.fontFamily;
               if(element.fontColors.hex8){
-                styleObject["color"]=element.fontColors.hex8;
+                styleObject["color"]=IDM.hex8ToRgbaString(element.fontColors.hex8);
               }
               styleObject["font-weight"]=element.fontWeight&&element.fontWeight.split(" ")[0];
               styleObject["font-style"]=element.fontStyle;

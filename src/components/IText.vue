@@ -322,10 +322,24 @@ export default {
      */
     receiveBroadcastMessage(object){
       console.log("组件收到消息",object)
-      if(object.type&&object.type=="linkageShowModule"){
+      if(object&&object.type=="linkageShowModule"){
         this.showThisModuleHandle();
-      }else if(object.type&&object.type=="linkageHideModule"){
+      }else if(object&&object.type=="linkageHideModule"){
         this.hideThisModuleHandle();
+      }else if(object&&object.type=="linkageResult"){
+        //结果格式化
+        if(this.propData.customFunction&&this.propData.customFunction.length>0){
+          //所有地址的url参数转换
+          var params = this.commonParam();
+          var resValue = "";
+          try {
+            resValue = window[this.propData.customFunction[0].name]&&window[this.propData.customFunction[0].name].call(this,{...params,...this.propData.customFunction[0].param,moduleObject:this.moduleObject,receiveData:object.message});
+          } catch (error) {
+          }
+          this.propData.fontContent = resValue;
+        }else{
+          this.propData.fontContent = object.message;
+        }
       }
     },
     /**

@@ -29,7 +29,8 @@ export default {
       thisValue:"",
       moduleObject:{},
       propData:this.$root.propData.compositeAttr||{},
-      isLoading:false
+      isLoading:false,
+      lastReceiveMessage:null
     }
   },
   props: {
@@ -623,6 +624,7 @@ export default {
      */
     receiveBroadcastMessage(object){
       console.log("组件收到消息",object)
+      this.lastReceiveMessage = object;
     },
     /**
      * 组件通信：发送消息的方法

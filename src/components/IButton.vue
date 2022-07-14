@@ -591,6 +591,7 @@ export default {
       var clickFunction = this.propData.clickFunction;
       clickFunction&&clickFunction.forEach(item=>{
         window[item.name]&&window[item.name].call(this,{
+          routerId:this.moduleObject.routerId,
           urlData:urlObject,
           pageId,
           customParam:item.param,

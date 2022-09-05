@@ -175,6 +175,9 @@ export default {
               styleObject["line-height"]=element.fontLineHeight+(element.fontLineHeightUnit=="-"?"":element.fontLineHeightUnit);
               styleObject["text-align"]=element.fontTextAlign;
               styleObject["text-decoration"]=element.fontDecoration;
+              if (element.fontLetterSpacing) {
+                styleObject["word-spacing"] = element.fontLetterSpacing + element.fontLetterSpacingUnit;
+              }
               break;
           }
         }

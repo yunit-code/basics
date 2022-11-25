@@ -12,7 +12,7 @@
       idm-ctrl-id：组件的id，这个必须不能为空
       idm-container-index  组件的内部容器索引，不重复唯一且不变，必选
     -->
-    <a-button @click="buttonClickHandle" :loading="isLoading" :type="propData.buttonType" v-if="propData.defaultStatus!='hidden'" :disabled="propData.defaultStatus=='disabled'" :size="propData.size||'default'">
+    <a-button @click="buttonClickHandle" :loading="isLoading" :type="propData.buttonType" v-if="propData.defaultStatus!='hidden'" :disabled="propData.defaultStatus=='disabled'" :size="propData.size||'default'" :shape="propData.shape">
       <svg class="button-svg-icon" v-if="propData.icon&&propData.icon.length>0" aria-hidden="true">
           <use :xlink:href="`#${propData.icon[0]}`"></use>
       </svg>{{propData.label}}
@@ -28,7 +28,9 @@ export default {
       errorMessage:"",
       thisValue:"",
       moduleObject:{},
-      propData:this.$root.propData.compositeAttr||{},
+      propData:this.$root.propData.compositeAttr||{
+        shape:"default"
+      },
       isLoading:false,
       lastReceiveMessage:null
     }
@@ -566,6 +568,111 @@ export default {
       //图标、图标颜色
       this.convertAttrToButtonIconStyle();
       
+      // 获取数据
+      this.initData()
+    },
+    /**
+     * 加载动态数据
+     */
+    initData(){
+      let that = this;
+      //所有地址的url参数转换
+      var params = that.commonParam();
+      switch (this.propData.dataSourceType) {
+        case "customInterface":
+          this.propData.customInterfaceUrl&&window.IDM.http.get(this.propData.customInterfaceUrl,params)
+          .then((res) => {
+            that.$set(that.propData,"label",that.getExpressData("resultData",that.propData.dataFiled,res.data));
+          })
+          .catch(function (error) {
+            
+          });
+          break;
+        case "pageCommonInterface":
+          //使用通用接口直接跳过，在setContextValue执行
+          break;
+        case "customFunction":
+          if(this.propData.customFunction&&this.propData.customFunction.length>0){
+            var resValue = "";
+            try {
+              resValue = window[this.propData.customFunction[0].name]&&window[this.propData.customFunction[0].name].call(this,{...params,...this.propData.customFunction[0].param,moduleObject:this.moduleObject});
+            } catch (error) {
+            }
+            that.propData.label = resValue;
+          }
+          break;
+      }
+    },
+    /**
+     * 交互功能：设置组件的上下文内容值
+     * @param {
+     *  type:"定义的类型，已知类型：pageCommonInterface（页面统一接口返回值）、"
+     *  key:"数据key标识，页面每个接口设置的数据集名称，方便识别获取自己需要的数据"
+     *  data:"数据集，内容为：字符串 or 数组 or 对象"
+     * }
+     */
+    setContextValue(object) {
+      console.log("统一接口设置的值", object);
+      if (object.type != "pageCommonInterface") {
+        return;
+      }
+      //这里使用的是子表，所以要循环匹配所有子表的属性然后再去设置修改默认值
+      if (object.key == this.propData.dataName) {
+        this.$set(this.propData,"label",this.getExpressData(this.propData.dataName,this.propData.dataFiled,object.data));
+      }
+    },
+    /**
+     * 通用的获取表达式匹配后的结果
+     */
+    getExpressData(dataName,dataFiled,resultData){
+      //给defaultValue设置dataFiled的值
+      var _defaultVal = undefined;
+      if(dataFiled){
+        var filedExp = dataFiled;
+        filedExp =
+          dataName +
+          (filedExp.startsWiths("[") ? "" : ".") +
+          filedExp;
+        var dataObject = { IDM: window.IDM };
+        dataObject[dataName] = resultData;
+        _defaultVal = window.IDM.express.replace.call(
+          this,
+          "@[" + filedExp + "]",
+          dataObject
+        );
+      }
+      //对结果进行再次函数自定义
+      if(this.propData.customFunction&&this.propData.customFunction.length>0){
+        var params = this.commonParam();
+        var resValue = "";
+        try {
+          resValue = window[this.propData.customFunction[0].name]&&window[this.propData.customFunction[0].name].call(this,{
+            ...params,
+            ...this.propData.customFunction[0].param,
+            moduleObject:this.moduleObject,
+            expressData:_defaultVal,interfaceData:resultData
+          });
+        } catch (error) {
+        }
+        _defaultVal = resValue;
+      }
+      
+      return _defaultVal;
+    },
+    /**
+     * 通用的url参数对象
+     * 所有地址的url参数转换
+     */
+    commonParam(){
+      let urlObject = IDM.url.queryObject();
+      var params = {
+        pageId:
+          window.IDM.broadcast && window.IDM.broadcast.pageModule
+            ? window.IDM.broadcast.pageModule.id
+            : "",
+        urlData: JSON.stringify(urlObject),
+      };
+      return params;
     },
     /**
      * 内部点击事件
@@ -626,6 +733,21 @@ export default {
     receiveBroadcastMessage(object){
       console.log("组件收到消息",object)
       this.lastReceiveMessage = object;
+      if(object&&object.type=="linkageResult"){
+        //结果格式化
+        if(this.propData.customFunction&&this.propData.customFunction.length>0){
+          //所有地址的url参数转换
+          var params = this.commonParam();
+          var resValue = "";
+          try {
+            resValue = window[this.propData.customFunction[0].name]&&window[this.propData.customFunction[0].name].call(this,{...params,...this.propData.customFunction[0].param,moduleObject:this.moduleObject,receiveData:object.message});
+          } catch (error) {
+          }
+          this.propData.label = resValue;
+        }else{
+          this.propData.label = object.message;
+        }
+      }
     },
     /**
      * 组件通信：发送消息的方法
@@ -640,17 +762,6 @@ export default {
      */
     sendBroadcastMessage(object){
         window.IDM.broadcast&&window.IDM.broadcast.send(object);
-    },
-    /**
-     * 交互功能：设置组件的上下文内容值
-     * @param {
-     *  type:"定义的类型，已知类型：pageCommonInterface（页面统一接口返回值）、"
-     *  key:"数据key标识，页面每个接口设置的数据集名称，方便识别获取自己需要的数据"
-     *  data:"数据集，内容为：字符串 or 数组 or 对象"
-     * }
-     */
-    setContextValue(object){
-      console.log(object)
     },
     /**
      * 交互功能：获取需要返回的值，返回格式如下

@@ -583,6 +583,16 @@ export default {
           this.propData.customInterfaceUrl&&window.IDM.http.get(this.propData.customInterfaceUrl,params)
           .then((res) => {
             that.$set(that.propData,"label",that.getExpressData("resultData",that.propData.dataFiled,res.data));
+            const func = this.propData.showFunction;
+            if(func && window[func[0].name]){
+                const status = window[func[0].name].call(this, {
+                ...this.commonParam(),
+                customParam: func[0].param,
+                _this: this,
+                result: res.data,
+              });
+              this.$set(this.propData,"defaultStatus",status);
+            }
           })
           .catch(function (error) {
             
@@ -619,6 +629,16 @@ export default {
       //这里使用的是子表，所以要循环匹配所有子表的属性然后再去设置修改默认值
       if (object.key == this.propData.dataName) {
         this.$set(this.propData,"label",this.getExpressData(this.propData.dataName,this.propData.dataFiled,object.data));
+        const func = this.propData.showFunction;
+        if(func && window[func[0].name]){
+            const status = window[func[0].name].call(this, {
+            ...this.commonParam(),
+            customParam: func[0].param,
+            _this: this,
+            result: object.data,
+          });
+          this.$set(this.propData,"defaultStatus",status);
+        }
       }
     },
     /**

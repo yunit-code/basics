@@ -1001,11 +1001,20 @@
                 {
                     "type": "textarea",
                     "layoutType": "inline",
-                    "text": "显示字段",
+                    "text": "文本字段",
                     "bindKey": "dataFiled",
                     "desc": "根据接口返回数据格式指定结果集的字段，比如结果集名为resultData（自定义接口忽略）且它的值为{data:{filedName:[{\"text\":\"\",\"value\":\"\",\"check\":true}]}}，则这里应该填写data.filedName",
                     "default": "",
                     "placeholder": "示例：data.filedName 或者 [0].data[0].filedName",
+                    "display": "@[dataSourceType!='customFunction'&&dataSourceType!='receiveMessage']"
+                },
+                {
+                    "type": "actionSelect",
+                    "layoutType": "block",
+                    "text": "显示函数",
+                    "bindKey": "showFunction",
+                    "desc": "按钮显示隐藏自定义函数",
+                    "multiple": false,
                     "display": "@[dataSourceType!='customFunction'&&dataSourceType!='receiveMessage']"
                 },
                 {

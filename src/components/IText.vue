@@ -343,8 +343,6 @@ export default {
         }else{
           this.propData.fontContent = object.message;
         }
-      }else if(object&&object.type=="pageCommonInterface" && this.propData.dataSourceType === "pageCommonInterface"){
-        this.setContextValue(object)
       }
     },
     /**
@@ -375,9 +373,8 @@ export default {
         return;
       }
       //这里使用的是子表，所以要循环匹配所有子表的属性然后再去设置修改默认值
-      if (object.messageKey == this.propData.dataName) {
-        // this.propData.fontContent = this.getExpressData(this.propData.dataName,this.propData.dataFiled,object.data);
-        this.$set(this.propData,"fontContent",this.getExpressData(this.propData.dataName,this.propData.dataFiled,object.message));
+      if (object.key == this.propData.dataName) {
+        this.$set(this.propData,"fontContent",this.getExpressData(this.propData.dataName,this.propData.dataFiled,object.data));
       }
     }
   }

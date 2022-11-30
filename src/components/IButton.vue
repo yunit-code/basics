@@ -733,7 +733,7 @@ export default {
     receiveBroadcastMessage(object){
       console.log("组件收到消息",object)
       this.lastReceiveMessage = object;
-      if(object&&object.type=="linkageResult"){
+      if(object&&object.type=="linkageResult" && this.propData.dataSourceType === "receiveMessage"){
         //结果格式化
         if(this.propData.customFunction&&this.propData.customFunction.length>0){
           //所有地址的url参数转换

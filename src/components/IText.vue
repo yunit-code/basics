@@ -329,7 +329,7 @@ export default {
         this.showThisModuleHandle();
       }else if(object&&object.type=="linkageHideModule"){
         this.hideThisModuleHandle();
-      }else if(object&&object.type=="linkageResult"){
+      }else if(object&&object.type=="linkageResult" && this.propData.dataSourceType === "receiveMessage"){
         //结果格式化
         if(this.propData.customFunction&&this.propData.customFunction.length>0){
           //所有地址的url参数转换

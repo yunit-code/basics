@@ -12,7 +12,7 @@
       idm-ctrl-id：组件的id，这个必须不能为空
       idm-container-index  组件的内部容器索引，不重复唯一且不变，必选
     -->
-    <a-button @click="buttonClickHandle" :loading="isLoading" :type="propData.buttonType" v-if="propData.defaultStatus!='hidden'" :disabled="propData.defaultStatus=='disabled'" :size="propData.size||'default'" :shape="propData.shape">
+    <a-button @click="buttonClickHandle" :loading="isLoading" :type="propData.buttonType" v-if="propData.defaultStatus!='hidden'" v-show="handleButtonShow(propData)" :disabled="propData.defaultStatus=='disabled'" :size="propData.size||'default'" :shape="propData.shape">
       <svg class="button-svg-icon" v-if="propData.icon&&propData.icon.length>0" aria-hidden="true">
           <use :xlink:href="`#${propData.icon[0]}`"></use>
       </svg>{{propData.label}}
@@ -583,16 +583,6 @@ export default {
           this.propData.customInterfaceUrl&&window.IDM.http.get(this.propData.customInterfaceUrl,params)
           .then((res) => {
             that.$set(that.propData,"label",that.getExpressData("resultData",that.propData.dataFiled,res.data));
-            const func = this.propData.showFunction;
-            if(func && window[func[0].name]){
-                const status = window[func[0].name].call(this, {
-                ...this.commonParam(),
-                customParam: func[0].param,
-                _this: this,
-                result: res.data,
-              });
-              this.$set(this.propData,"defaultStatus",status);
-            }
           })
           .catch(function (error) {
             
@@ -629,16 +619,6 @@ export default {
       //这里使用的是子表，所以要循环匹配所有子表的属性然后再去设置修改默认值
       if (object.key == this.propData.dataName) {
         this.$set(this.propData,"label",this.getExpressData(this.propData.dataName,this.propData.dataFiled,object.data));
-        const func = this.propData.showFunction;
-        if(func && window[func[0].name]){
-            const status = window[func[0].name].call(this, {
-            ...this.commonParam(),
-            customParam: func[0].param,
-            _this: this,
-            result: object.data,
-          });
-          this.$set(this.propData,"defaultStatus",status);
-        }
       }
     },
     /**
@@ -803,7 +783,14 @@ export default {
             break;
         }
         return styles;
-    }
+    },
+    // button is show
+    handleButtonShow(item) {
+      const funcName = this.propData?.showFunction?.[0]?.name
+      if (!funcName) return true
+      const result = window?.[funcName]?.call(this, item.key)
+      return result
+    },
   }
 }
 </script>

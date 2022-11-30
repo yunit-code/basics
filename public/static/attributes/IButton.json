@@ -1014,8 +1014,7 @@
                     "text": "显示函数",
                     "bindKey": "showFunction",
                     "desc": "按钮显示隐藏自定义函数",
-                    "multiple": false,
-                    "display": "@[dataSourceType!='customFunction'&&dataSourceType!='receiveMessage']"
+                    "multiple": false
                 },
                 {
                     "type": "actionSelect",

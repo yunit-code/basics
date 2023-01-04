@@ -170,6 +170,8 @@ export default {
       window.IDM.setStyleToPageHead(this.moduleObject.id,styleObject);
       //加载图片的样式对象
       this.convertAttrToImageStyleObject();
+
+      this.initData();
     },
     /**
      * 把属性转换成样式对象
@@ -197,6 +199,74 @@ export default {
         }
       }
       window.IDM.setStyleToPageHead(this.moduleObject.id+" img",styleObject);
+    },
+    initData(){
+      let that = this;
+      //所有地址的url参数转换
+      var params = that.commonParam();
+      switch (this.propData.dataSourceType) {
+        case "customInterface":
+          this.propData.customInterfaceUrl&&window.IDM.http.get(this.propData.customInterfaceUrl,params)
+          .then((res) => {
+            //res.data
+            that.$set(that.propData,"imageUrl",that.getExpressData("resultData",that.propData.dataFiled,res.data));
+          })
+          .catch(function (error) {
+            
+          });
+          break;
+        case "pageCommonInterface":
+          //使用通用接口直接跳过，在setContextValue执行
+          break;
+        case "customFunction":
+          if(this.propData.customFunction&&this.propData.customFunction.length>0){
+            var resValue = "";
+            try {
+              resValue = window[this.propData.customFunction[0].name]&&window[this.propData.customFunction[0].name].call(this,{...params,...this.propData.customFunction[0].param,moduleObject:this.moduleObject});
+            } catch (error) {
+            }
+            that.propData.imageUrl = resValue;
+          }
+          break;
+      }
+    },
+    /**
+     * 通用的获取表达式匹配后的结果
+     */
+    getExpressData(dataName,dataFiled,resultData){
+      //给defaultValue设置dataFiled的值
+      var _defaultVal = undefined;
+      if(dataFiled){
+        var filedExp = dataFiled;
+        filedExp =
+          dataName +
+          (filedExp.startsWiths("[") ? "" : ".") +
+          filedExp;
+        var dataObject = { IDM: window.IDM };
+        dataObject[dataName] = resultData;
+        _defaultVal = window.IDM.express.replace.call(
+          this,
+          "@[" + filedExp + "]",
+          dataObject
+        );
+      }
+      //对结果进行再次函数自定义
+      if(this.propData.customFunction&&this.propData.customFunction.length>0){
+        var params = this.commonParam();
+        var resValue = "";
+        try {
+          resValue = window[this.propData.customFunction[0].name]&&window[this.propData.customFunction[0].name].call(this,{
+            ...params,
+            ...this.propData.customFunction[0].param,
+            moduleObject:this.moduleObject,
+            expressData:_defaultVal,interfaceData:resultData
+          });
+        } catch (error) {
+        }
+        _defaultVal = resValue;
+      }
+      
+      return _defaultVal;
     },
     /**
      * 内部点击事件
@@ -253,6 +323,24 @@ export default {
      */
     sendBroadcastMessage(object){
         IDM.broadcast&&IDM.broadcast.send(object);
+    },
+    /**
+     * 交互功能：设置组件的上下文内容值
+     * @param {
+     *  type:"定义的类型，已知类型：pageCommonInterface（页面统一接口返回值）、"
+     *  key:"数据key标识，页面每个接口设置的数据集名称，方便识别获取自己需要的数据"
+     *  data:"数据集，内容为：字符串 or 数组 or 对象"
+     * }
+     */
+    setContextValue(object) {
+      console.log("图片统一接口设置的值", object,this.propData.dataName,this.propData.dataFiled);
+      if (object.type != "pageCommonInterface") {
+        return;
+      }
+      //这里使用的是子表，所以要循环匹配所有子表的属性然后再去设置修改默认值
+      if (object.key == this.propData.dataName) {
+        this.$set(this.propData,"imageUrl",this.getExpressData(this.propData.dataName,this.propData.dataFiled,object.data));
+      }
     }
   }
 }

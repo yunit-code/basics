@@ -12,7 +12,7 @@
       idm-ctrl-id：组件的id，这个必须不能为空
       idm-container-index  组件的内部容器索引，不重复唯一且不变，必选
     -->
-    <a-button @click="buttonClickHandle" :loading="isLoading" :type="propData.buttonType" v-if="propData.defaultStatus!='hidden'" v-show="handleButtonShow(propData)" :disabled="propData.defaultStatus=='disabled'" :size="propData.size||'default'" :shape="propData.shape">
+    <a-button @click="buttonClickHandle" :loading="isLoading" :type="propData.buttonType" v-if="propData.defaultStatus!='hidden'" v-show="showBtn" :disabled="propData.defaultStatus=='disabled'" :size="propData.size||'default'" :shape="propData.shape">
       <svg class="button-svg-icon" v-if="propData.icon&&propData.icon.length>0" aria-hidden="true">
           <use :xlink:href="`#${propData.icon[0]}`"></use>
       </svg>{{propData.label}}
@@ -32,7 +32,8 @@ export default {
         shape:"default"
       },
       isLoading:false,
-      lastReceiveMessage:null
+      lastReceiveMessage:null,
+      showBtn:true
     }
   },
   props: {
@@ -570,6 +571,7 @@ export default {
       
       // 获取数据
       this.initData()
+      this.handleButtonShow(this.propData)
     },
     /**
      * 加载动态数据
@@ -620,6 +622,7 @@ export default {
       if (object.key == this.propData.dataName) {
         this.$set(this.propData,"label",this.getExpressData(this.propData.dataName,this.propData.dataFiled,object.data));
       }
+      this.handleButtonShow(this.propData)
     },
     /**
      * 通用的获取表达式匹配后的结果
@@ -731,8 +734,12 @@ export default {
      * } object 
      */
     receiveBroadcastMessage(object){
-      console.log("组件收到消息",object)
+      console.log("按钮组件收到消息",object)
       this.lastReceiveMessage = object;
+      if(object&&object.type=="linkageReload"){
+        this.initData()
+        this.handleButtonShow(this.propData)
+      }
       if(object&&object.type=="linkageResult" && this.propData.dataSourceType === "receiveMessage"){
         //结果格式化
         if(this.propData.customFunction&&this.propData.customFunction.length>0){
@@ -747,6 +754,7 @@ export default {
         }else{
           this.propData.label = object.message;
         }
+        this.handleButtonShow(this.propData)
       }
     },
     /**
@@ -788,8 +796,7 @@ export default {
     handleButtonShow(item) {
       const funcName = this.propData?.showFunction?.[0]?.name
       if (!funcName) return true
-      const result = window?.[funcName]?.call(this, item.key)
-      return result
+      this.showBtn = window?.[funcName]?.call(this, item.key)
     },
   }
 }

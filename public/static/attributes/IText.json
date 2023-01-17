@@ -38,6 +38,23 @@
                 {
                     "type": "radio",
                     "layoutType": "inline",
+                    "text": "渲染方式",
+                    "bindKey": "renderStyle",
+                    "dictionary": [
+                        {
+                            "label": "text",
+                            "value": "text"
+                        },
+                        {
+                            "label": "html",
+                            "value": "html"
+                        }
+                    ],
+                    "default": "text"
+                },
+                {
+                    "type": "radio",
+                    "layoutType": "inline",
                     "text": "默认状态",
                     "bindKey": "defaultStatus",
                     "dictionary": [

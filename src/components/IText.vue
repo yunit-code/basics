@@ -6,10 +6,11 @@
     idm-ctrl-id：组件的id，这个必须不能为空
   -->
   <div idm-ctrl="idm_module"
+    class="idm-text"
    :id="moduleObject.id" 
    :idm-ctrl-id="moduleObject.id" 
    :title="propData.htmlTitle?propData.fontContent:''" 
-   v-show="propData.defaultStatus!='hidden'" 
+   v-show="propData.defaultStatus!='hidden'"
    @click="textClickHandle">
     <!--
       组件内部容器
@@ -17,7 +18,8 @@
       idm-ctrl-id：组件的id，这个必须不能为空
       idm-container-index  组件的内部容器索引，不重复唯一且不变，必选
     -->
-    {{propData.fontContent}}
+    <div v-if="propData.renderStyle=='html'" v-html="propData.fontContent"></div>
+    <div v-else v-text="propData.fontContent"></div>
   </div>
 </template>
 
@@ -27,7 +29,9 @@ export default {
   data(){
     return {
       moduleObject:{},
-      propData:this.$root.propData.compositeAttr||{}
+      propData:this.$root.propData.compositeAttr||{
+        renderStyle:"text"
+      }
     }
   },
   props: {
@@ -380,3 +384,24 @@ export default {
   }
 }
 </script>
+<style scoped lang="scss">
+.idm-text {
+  overflow: auto;
+
+  &::-webkit-scrollbar-track-piece {
+    background-color: #ffffff;
+  }
+
+  &::-webkit-scrollbar {
+    width: 8px;
+    height: 9px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #ebebeb;
+    background-clip: padding-box;
+    min-height: 28px;
+    border-radius: 4px;
+  }
+}
+</style>

@@ -169,19 +169,10 @@ export default {
               styleObject["border-bottom-right-radius"]=element.radius.rightBottom.radius+element.radius.rightBottom.radiusUnit;
               break;
             case "font":
-              styleObject["font-family"]=element.fontFamily;
-              if(element.fontColors.hex8){
-                styleObject["color"]=IDM.hex8ToRgbaString(element.fontColors.hex8);
-              }
-              styleObject["font-weight"]=element.fontWeight&&element.fontWeight.split(" ")[0];
-              styleObject["font-style"]=element.fontStyle;
-              styleObject["font-size"]=element.fontSize+element.fontSizeUnit;
-              styleObject["line-height"]=element.fontLineHeight+(element.fontLineHeightUnit=="-"?"":element.fontLineHeightUnit);
-              styleObject["text-align"]=element.fontTextAlign;
-              styleObject["text-decoration"]=element.fontDecoration;
               if (element.fontLetterSpacing) {
                 styleObject["word-spacing"] = element.fontLetterSpacing + element.fontLetterSpacingUnit;
               }
+              IDM.style.setFontStyle(styleObject, element)
               break;
           }
         }

@@ -11,7 +11,7 @@
    :idm-ctrl-id="moduleObject.id" 
    :title="propData.htmlTitle?propData.fontContent:''" 
    v-show="propData.defaultStatus!='hidden'"
-   :style="{cursor: propData.clickFunction && propData.clickFunction[0]?.name ? 'pointer' : ''}"
+   :style="{cursor: propData.clickFunction && propData.clickFunction[0] && propData.clickFunction[0].name ? 'pointer' : ''}"
    @click="textClickHandle">
     <!--
       组件内部容器

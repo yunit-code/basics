@@ -387,6 +387,7 @@ export default {
 <style scoped lang="scss">
 .idm-text {
   overflow: auto;
+  word-wrap: break-word;
 
   &::-webkit-scrollbar-track-piece {
     background-color: #ffffff;

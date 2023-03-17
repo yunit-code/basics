@@ -11,6 +11,7 @@
    :idm-ctrl-id="moduleObject.id" 
    :title="propData.htmlTitle?propData.fontContent:''" 
    v-show="propData.defaultStatus!='hidden'"
+   :style="{cursor: propData.clickFunction && propData.clickFunction[0] && propData.clickFunction[0].name ? 'pointer' : ''}"
    @click="textClickHandle">
     <!--
       组件内部容器
@@ -89,30 +90,7 @@ export default {
               }
               break;
             case "box":
-              if(element.marginTopVal){
-                styleObject["margin-top"]=`${element.marginTopVal}`;
-              }
-              if(element.marginRightVal){
-                styleObject["margin-right"]=`${element.marginRightVal}`;
-              }
-              if(element.marginBottomVal){
-                styleObject["margin-bottom"]=`${element.marginBottomVal}`;
-              }
-              if(element.marginLeftVal){
-                styleObject["margin-left"]=`${element.marginLeftVal}`;
-              }
-              if(element.paddingTopVal){
-                styleObject["padding-top"]=`${element.paddingTopVal}`;
-              }
-              if(element.paddingRightVal){
-                styleObject["padding-right"]=`${element.paddingRightVal}`;
-              }
-              if(element.paddingBottomVal){
-                styleObject["padding-bottom"]=`${element.paddingBottomVal}`;
-              }
-              if(element.paddingLeftVal){
-                styleObject["padding-left"]=`${element.paddingLeftVal}`;
-              }
+              IDM.style.setBoxStyle(styleObject, element)
               break;
             case "bgImgUrl":
               styleObject["background-image"]=`url(${window.IDM.url.getWebPath(element)})`;
@@ -134,54 +112,10 @@ export default {
                 styleObject["background-attachment"]=element;
               break;
             case "border":
-              if(element.border.top.width>0){
-                styleObject["border-top-width"]=element.border.top.width+element.border.top.widthUnit;
-                styleObject["border-top-style"]=element.border.top.style;
-                if(element.border.top.colors.hex8){
-                  styleObject["border-top-color"]=IDM.hex8ToRgbaString(element.border.top.colors.hex8);
-                }
-              }
-              if(element.border.right.width>0){
-                styleObject["border-right-width"]=element.border.right.width+element.border.right.widthUnit;
-                styleObject["border-right-style"]=element.border.right.style;
-                if(element.border.right.colors.hex8){
-                  styleObject["border-right-color"]=IDM.hex8ToRgbaString(element.border.right.colors.hex8);
-                }
-              }
-              if(element.border.bottom.width>0){
-                styleObject["border-bottom-width"]=element.border.bottom.width+element.border.bottom.widthUnit;
-                styleObject["border-bottom-style"]=element.border.bottom.style;
-                if(element.border.bottom.colors.hex8){
-                  styleObject["border-bottom-color"]=IDM.hex8ToRgbaString(element.border.bottom.colors.hex8);
-                }
-              }
-              if(element.border.left.width>0){
-                styleObject["border-left-width"]=element.border.left.width+element.border.left.widthUnit;
-                styleObject["border-left-style"]=element.border.left.style;
-                if(element.border.left.colors.hex8){
-                  styleObject["border-left-color"]=IDM.hex8ToRgbaString(element.border.left.colors.hex8);
-                }
-              }
-              
-              styleObject["border-top-left-radius"]=element.radius.leftTop.radius+element.radius.leftTop.radiusUnit;
-              styleObject["border-top-right-radius"]=element.radius.rightTop.radius+element.radius.rightTop.radiusUnit;
-              styleObject["border-bottom-left-radius"]=element.radius.leftBottom.radius+element.radius.leftBottom.radiusUnit;
-              styleObject["border-bottom-right-radius"]=element.radius.rightBottom.radius+element.radius.rightBottom.radiusUnit;
+              IDM.style.setBorderStyle(styleObject, element)
               break;
             case "font":
-              styleObject["font-family"]=element.fontFamily;
-              if(element.fontColors.hex8){
-                styleObject["color"]=IDM.hex8ToRgbaString(element.fontColors.hex8);
-              }
-              styleObject["font-weight"]=element.fontWeight&&element.fontWeight.split(" ")[0];
-              styleObject["font-style"]=element.fontStyle;
-              styleObject["font-size"]=element.fontSize+element.fontSizeUnit;
-              styleObject["line-height"]=element.fontLineHeight+(element.fontLineHeightUnit=="-"?"":element.fontLineHeightUnit);
-              styleObject["text-align"]=element.fontTextAlign;
-              styleObject["text-decoration"]=element.fontDecoration;
-              if (element.fontLetterSpacing) {
-                styleObject["word-spacing"] = element.fontLetterSpacing + element.fontLetterSpacingUnit;
-              }
+              IDM.style.setFontStyle(styleObject, element)
               break;
           }
         }

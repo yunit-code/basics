@@ -292,7 +292,7 @@
                     "layoutType": "inline",
                     "text": "动态内容",
                     "bindKey": "dataSourceType",
-                    "desc": "通过这些方式去动态获取结果值显示成文本内容",
+                    "desc": "通过这些方式去动态获取图片地址的结果值来显示成图片",
                     "dictionary": [
                         {
                             "label": "自定义接口",

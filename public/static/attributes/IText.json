@@ -53,6 +53,21 @@
                     "default": "text"
                 },
                 {
+                    "type": "switch",
+                    "layoutType": "inline",
+                    "text": "超出省略",
+                    "bindKey": "showEllipsis",
+                    "default": false
+                },
+                {
+                    "type": "inputNumber",
+                    "layoutType": "inline",
+                    "text": "超出行数",
+                    "bindKey": "overRowCount",
+                    "display":"@[showEllipsis]",
+                    "default": 1
+                },
+                {
                     "type": "radio",
                     "layoutType": "inline",
                     "text": "默认状态",

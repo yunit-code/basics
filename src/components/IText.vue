@@ -19,8 +19,18 @@
       idm-ctrl-id：组件的id，这个必须不能为空
       idm-container-index  组件的内部容器索引，不重复唯一且不变，必选
     -->
-    <div v-if="propData.renderStyle=='html'" v-html="propData.fontContent"></div>
-    <div v-else v-text="propData.fontContent"></div>
+    <div 
+      v-if="propData.renderStyle=='html'" 
+      :class="{'ellipsis':propData.showEllipsis}" 
+      :style="`line-clamp: ${propData.overRowCount};-webkit-line-clamp: ${propData.overRowCount};`"  
+      v-html="propData.fontContent"
+    ></div>
+    <div 
+      v-else 
+      :class="{'ellipsis':propData.showEllipsis}" 
+      :style="`line-clamp: ${propData.overRowCount};-webkit-line-clamp: ${propData.overRowCount};`"  
+      v-text="propData.fontContent"
+    ></div>
   </div>
 </template>
 
@@ -31,7 +41,10 @@ export default {
     return {
       moduleObject:{},
       propData:this.$root.propData.compositeAttr||{
-        renderStyle:"text"
+        fontContent:"文本",
+        renderStyle:"text",
+        showEllipsis: true,
+        overRowCount: 3,
       }
     }
   },
@@ -322,6 +335,15 @@ export default {
 .idm-text {
   overflow: auto;
   word-wrap: break-word;
+
+  div.ellipsis {
+    overflow: hidden; 
+    white-space: normal; 
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    line-clamp: 3;
+    -webkit-line-clamp: 3; //显示几行
+  }
 
   &::-webkit-scrollbar-track-piece {
     background-color: #ffffff;

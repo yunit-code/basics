@@ -505,6 +505,23 @@
                     ]
                 }
             ]
+        },
+        {
+            "type": "group",
+            "text": "高级属性",
+            "children":[
+                {
+                    "type": "styleEditor",
+                    "layoutType": "block",
+                    "text": "样式编辑",
+                    "bindKey": "styleList",
+                    "desc": "组件整体样式自定义编写，IDM表达式可使用的参数对象为：{_this:当前组件this对象,moduleObject：当前组件信息对象,IDM：IDM全局变量,window:当前window对象,组件传递的其他参数}",
+                    "multiple": true,
+                    "ctrlAttrObject":{
+                        "idmCoreLoad":true
+                    }
+                }
+            ]
         }
     ]
 }

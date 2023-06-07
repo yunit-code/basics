@@ -274,13 +274,13 @@ basics@1.0.0
 
 #### 显示字段【dataFiled】
 
-根据接口返回数据格式指定结果集的字段，比如结果集名为resultData（自定义接口忽略）且它的值为{data:{filedName:[{\"text\":\"\",\"value\":\"\",\"check\":true}]}}，则这里应该填写data.filedName
+根据接口返回数据、页面接口结果集或者收到的联动消息数据的指定字段。比如以上获得数据结果的值为`{data:{filedName:[{\"text\":\"\",\"value\":\"\",\"check\":true}]}}`，则这里应该填写`data.filedName`；如果为非对象类型的，比如数组则直接配置 `_idm_[0].data.filedName`，比如为字符串或者其他的布尔值等则直接 `_idm_`
 
 - 标识：`dataFiled`
 
 - 默认值：``
 
-- 显示条件：`动态内容!=自定义函数&动态内容!=接收联动消息`
+- 显示条件：`动态内容!=自定义函数`
 
 #### 自定义函数【customFunction】
 

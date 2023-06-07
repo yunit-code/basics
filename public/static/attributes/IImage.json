@@ -31,7 +31,7 @@
                 {
                     "type": "input",
                     "layoutType": "inline",
-                    "text": "title",
+                    "text": "提示title",
                     "bindKey": "titleContent",
                     "desc": "html标签的title，也就是鼠标放上去会有显示文本内容的文字",
                     "default": ""
@@ -43,6 +43,45 @@
                     "bindKey": "altContent",
                     "desc": "图片加载失败的占位文字",
                     "default": "Image 404"
+                },
+                {
+                    "type": "radio",
+                    "layoutType": "inline",
+                    "text": "默认状态",
+                    "bindKey": "defaultStatus",
+                    "dictionary": [
+                        {
+                            "label": "普通",
+                            "value": "default"
+                        },
+                        {
+                            "label": "隐藏",
+                            "value": "hidden"
+                        },
+                        {
+                            "label": "自定义",
+                            "value": "custom"
+                        }
+                    ],
+                    "default": "default"
+                },
+                {
+                    "type": "textarea",
+                    "layoutType": "block",
+                    "text": "状态表达式",
+                    "bindKey": "statusExpression",
+                    "placeholder": "请输入表达式依据",
+                    "desc": "支持IDM表达式，可直接使用IDM变量和联动的消息，结果为true则会以普通的方式展示，否则为隐藏模式，联动消息属性为：linkMessageObject，数据源为自定义函数返回数据的属性为：customFunData，页面统一接口的数据为：pageInterfaceData，数据源的数据为：dataSourceData，填写表达式例如：linkMessageObject.message==1，如果为非对象类型的，比如数组则直接配置 _idm_[0].data.filedName，比如为字符串或者其他的布尔值等则直接 _idm_",
+                    "display": "@[defaultStatus=='custom']"
+                },
+                {
+                    "type": "actionSelect",
+                    "layoutType": "block",
+                    "text": "状态自定义函数",
+                    "bindKey": "statusCustomFunction",
+                    "desc": "状态可根据需求实现更复杂的逻辑判断，返回true则会以普通的方式展示，否则为隐藏模式，接收参数格式为{...自定义的，linkMessageObject:联动的消息数据,customFunData:数据源为自定义函数返回数据,pageInterfaceData:页面统一接口的数据,dataSourceData:数据源的数据}",
+                    "display": "@[defaultStatus=='custom']",
+                    "multiple": false
                 }
             ]
         },
@@ -271,6 +310,14 @@
                     "layoutType": "block",
                     "text": "文字",
                     "bindKey": "font"
+                },
+                {
+                  "type": "input",
+                  "layoutType": "inline",
+                  "text": "图片阴影",
+                  "desc": "填写格式如下：10px 10px 5px #888888",
+                  "bindKey": "shadow",
+                  "default": ""
                 }
             ]
         },
@@ -295,6 +342,14 @@
                     "desc": "通过这些方式去动态获取图片地址的结果值来显示成图片",
                     "dictionary": [
                         {
+                            "label": "无",
+                            "value": "none"
+                        },
+                        {
+                            "label": "数据源",
+                            "value": "datasource"
+                        },
+                        {
                             "label": "自定义接口",
                             "value": "customInterface"
                         },
@@ -311,14 +366,29 @@
                             "value": "receiveMessage"
                         }
                     ],
-                    "default": "customInterface"
+                    "default": "none"
+                },
+                {
+                    "type": "dataSourceSelect",
+                    "layoutType": "inline",
+                    "text": "数据源",
+                    "bindKey": "dataSourceSelectData",
+                    "multiple": false,
+                    "display": "@[dataSourceType=='datasource']",
+                    "ctrlAttrObject": {
+                        "tags": [
+                            "[]",
+                            "[{}]",
+                            "any"
+                        ]
+                    }
                 },
                 {
                     "type": "input",
                     "layoutType": "inline",
                     "text": "接口地址",
                     "bindKey": "customInterfaceUrl",
-                    "desc": "用于获取数据源的接口地址，请按照统一标准的返回格式返回文本数据，格式如下：{\"code\":\"200\",\"data\":\"\",...}",
+                    "desc": "用于获取数据源的接口地址，请按照统一标准的返回格式返回图片地址数据，格式如下：{\"code\":\"200\",\"data\":\"\",...}",
                     "display": "@[dataSourceType=='customInterface']"
                 },
                 {
@@ -330,24 +400,43 @@
                     "default": "",
                     "placeholder": "示例：resultData",
                     "display": "@[dataSourceType=='pageCommonInterface']"
+                },{
+                    "type": "select",
+                    "layoutType": "inline",
+                    "text": "rMsgKey",
+                    "bindKey": "receiveMessageKey",
+                    "desc": "当接收到联动消息的时候需要通过此处的接收消息MessageKey标识，如果未匹配到则不会应用此次的联动消息数据。",
+                    "dictionary": [
+                        {
+                            "label": "dynamicRenderModule",
+                            "value": "dynamicRenderModule"
+                        }
+                    ],
+                    "multiple":true,
+                    "ctrlAttrObject":{
+                        "mode":"tags"
+                    },
+                    "default": "dynamicRenderModule",
+                    "display": "@[dataSourceType=='receiveMessage']"
                 },
                 {
                     "type": "textarea",
                     "layoutType": "inline",
                     "text": "显示字段",
                     "bindKey": "dataFiled",
-                    "desc": "根据接口返回数据格式指定结果集的字段，比如结果集名为resultData（自定义接口忽略）且它的值为{data:{filedName:[{\"text\":\"\",\"value\":\"\",\"check\":true}]}}，则这里应该填写data.filedName",
+                    "desc": "根据接口返回数据、页面接口结果集或者收到的联动消息数据的指定字段。比如以上获得数据结果的值为{data:{filedName:[{\"text\":\"\",\"value\":\"\",\"check\":true}]}}，则这里应该填写data.filedName；如果为非对象类型的，比如数组则直接配置 _idm_[0].data.filedName，比如为字符串或者其他的布尔值等则直接 _idm_",
                     "default": "",
                     "placeholder": "示例：data.filedName 或者 [0].data[0].filedName",
-                    "display": "@[dataSourceType!='customFunction'&&dataSourceType!='receiveMessage']"
+                    "display": "@[dataSourceType!='customFunction'&&dataSourceType!='none']"
                 },
                 {
                     "type": "actionSelect",
                     "layoutType": "block",
                     "text": "自定义函数",
                     "bindKey": "customFunction",
-                    "desc": "获取动态文本内容、自定义接口回调、页面统一接口回调的时候会调用此方法，返回数据格式为字符串，接收参数：{...自定义,interfaceData:自定义接口或页面统一接口的返回结果,expressData:表达式替换后的结果,moduleObject:组件对象,receiveData:接收到的消息数据}",
-                    "multiple": false
+                    "desc": "获取动态文本内容、自定义接口回调、页面统一接口、消息联动回调的时候会调用此方法，返回数据格式为字符串，接收参数：{...自定义,interfaceData:自定义接口或页面统一接口的返回结果或接收到的消息数据,expressData:表达式替换后的结果,moduleObject:组件对象}",
+                    "multiple": false,
+                    "display": "@[dataSourceType!='none']"
                 }
             ]
         }

@@ -5,105 +5,144 @@
     id：使用moduleObject.id，如果id不使用这个将会被idm-ctrl-id属性替换
     idm-ctrl-id：组件的id，这个必须不能为空
   -->
-  <div idm-ctrl="idm_module" :id="moduleObject.id" :idm-ctrl-id="moduleObject.id">
+  <div
+    idm-ctrl="idm_module"
+    :id="moduleObject.id"
+    v-show="componentVisibleStatus"
+    :idm-ctrl-id="moduleObject.id"
+    :style="{
+      cursor:
+        propData.clickFunction &&
+        propData.clickFunction[0] &&
+        propData.clickFunction[0].name
+          ? 'pointer'
+          : '',
+    }"
+  >
     <!--
       组件内部容器
       增加class="drag_container" 必选
       idm-ctrl-id：组件的id，这个必须不能为空
       idm-container-index  组件的内部容器索引，不重复唯一且不变，必选
     -->
-    <img @click="imageClickHandle" :title="propData.titleContent" :alt="propData.altContent" :src="propData&&propData.imageUrl?IDM.url.getWebPath(propData.imageUrl):IDM.url.getModuleAssetsWebPath(require('../assets/default_image.svg'),moduleObject)">
+    <img
+      @click="imageClickHandle"
+      :title="propData.titleContent"
+      :alt="propData.altContent"
+      :src="
+        propData && propData.imageUrl
+          ? IDM.url.getWebPath(propData.imageUrl)
+          : IDM.url.getModuleAssetsWebPath(
+              require('../assets/default_image.svg'),
+              moduleObject
+            )
+      "
+    />
     <!-- {{$root.propData}} -->
   </div>
 </template>
 
 <script>
 export default {
-  name: 'IImage',
-  data(){
+  name: "IImage",
+  data() {
     return {
-      moduleObject:{},
-      propData:this.$root.propData.compositeAttr||{}
-    }
+      moduleObject: {},
+      propData: this.$root.propData.compositeAttr || {},
+      componentVisibleStatus: false,
+      isErrorStatus: false,
+    };
   },
-  props: {
-  },
+  props: {},
   created() {
-    this.moduleObject = this.$root.moduleObject
+    this.moduleObject = this.$root.moduleObject;
     // console.log(this.moduleObject)
     this.convertAttrToStyleObject();
+    this.initComponentStatus();
   },
-  mounted() {
-  },
+  mounted() {},
   destroyed() {},
-  methods:{
+  methods: {
+    /**
+     * 初始化控件的状态
+     */
+    initComponentStatus(
+      linkMessageObject,
+      customFunData,
+      pageInterfaceData,
+      dataSourceData
+    ) {
+      if (this.moduleObject.env == undefined || this.moduleObject.env == "develop") {
+        this.componentVisibleStatus = true;
+        return;
+      }
+      switch (this.propData.defaultStatus) {
+        case "default":
+          this.componentVisibleStatus = true;
+          break;
+        case "hidden":
+          this.componentVisibleStatus = false;
+          break;
+        case "custom":
+          if (
+            this.propData.statusCustomFunction &&
+            this.propData.statusCustomFunction.length
+          ) {
+            let result = IDM.invokeCustomFunctions.apply(this, [
+              this.propData.statusCustomFunction,
+              {
+                linkMessageObject,
+                customFunData,
+                pageInterfaceData,
+                dataSourceData,
+              },
+            ]);
+            this.componentVisibleStatus =
+              result && result.length > 0 && result[0] === true;
+          } else if (this.propData.statusExpression) {
+            this.componentVisibleStatus = IDM.getExpressData(
+              this.propData.statusExpression,
+              {
+                linkMessageObject,
+                customFunData,
+                pageInterfaceData,
+                dataSourceData,
+              }
+            );
+          }
+          break;
+      }
+    },
     /**
      * 提供父级组件调用的刷新prop数据组件
      */
-    propDataWatchHandle(propData){
-      this.propData = propData.compositeAttr||{};
+    propDataWatchHandle(propData) {
+      this.propData = propData.compositeAttr || {};
       this.convertAttrToStyleObject();
     },
     /**
      * 把属性转换成样式对象
      */
-    convertAttrToStyleObject(){
+    convertAttrToStyleObject() {
       var styleObject = {};
-      if(this.propData.bgSize&&this.propData.bgSize=="custom"){
-        styleObject["background-size"]=(this.propData.bgSizeWidth?this.propData.bgSizeWidth.inputVal+this.propData.bgSizeWidth.selectVal:"auto")+" "+(this.propData.bgSizeHeight?this.propData.bgSizeHeight.inputVal+this.propData.bgSizeHeight.selectVal:"auto")
-      }else if(this.propData.bgSize){
-        styleObject["background-size"]=this.propData.bgSize;
-      }
-      if(this.propData.positionX&&this.propData.positionX.inputVal){
-        styleObject["background-position-x"]=this.propData.positionX.inputVal+this.propData.positionX.selectVal;
-      }
-      if(this.propData.positionY&&this.propData.positionY.inputVal){
-        styleObject["background-position-y"]=this.propData.positionY.inputVal+this.propData.positionY.selectVal;
-      }
       for (const key in this.propData) {
         if (this.propData.hasOwnProperty.call(this.propData, key)) {
           const element = this.propData[key];
-          if(!element&&element!==false&&element!=0){
+          if (!element && element !== false && element != 0) {
             continue;
           }
           switch (key) {
-            case "bgColor":
-              if(element&&element.hex8){
-                styleObject["background-color"]=IDM.hex8ToRgbaString(element.hex8);
-              }
-              break;
             case "box":
-              IDM.style.setBoxStyle(styleObject, element)
-              break;
-            case "bgImgUrl":
-              styleObject["background-image"]=`url(${window.IDM.url.getWebPath(element)})`;
-              break;
-            case "positionX":
-              //背景横向偏移
-              
-              break;
-            case "positionY":
-              //背景纵向偏移
-              
-              break;
-            case "bgRepeat":
-              //平铺模式
-                styleObject["background-repeat"]=element;
-              break;
-            case "bgAttachment":
-              //背景模式
-                styleObject["background-attachment"]=element;
-              break;
-            case "border":
-              IDM.style.setBorderStyle(styleObject, element)
+              IDM.style.setBoxStyle(styleObject, element);
               break;
             case "font":
-              IDM.style.setFontStyle(styleObject, element)
+              IDM.style.setFontStyle(styleObject, element);
               break;
           }
         }
       }
-      window.IDM.setStyleToPageHead(this.moduleObject.id,styleObject);
+      IDM.style.setBackgroundStyle(styleObject, this.propData);
+      window.IDM.setStyleToPageHead(this.moduleObject.id, styleObject);
       //加载图片的样式对象
       this.convertAttrToImageStyleObject();
 
@@ -112,26 +151,29 @@ export default {
     /**
      * 把属性转换成样式对象
      */
-    convertAttrToImageStyleObject(){
+    convertAttrToImageStyleObject() {
       var styleObject = {};
       for (const key in this.propData) {
         if (this.propData.hasOwnProperty.call(this.propData, key)) {
           const element = this.propData[key];
-          if(!element&&element!==false&&element!=0){
+          if (!element && element !== false && element != 0) {
             continue;
           }
           switch (key) {
             case "width":
             case "height":
-              styleObject[key]=element;
+              styleObject[key] = element;
               break;
             case "border":
-              IDM.style.setBorderStyle(styleObject, element)
-             break;
+              IDM.style.setBorderStyle(styleObject, element);
+              break;
+            case "shadow":
+              styleObject["box-shadow"] = element;
+              break;
           }
         }
       }
-      window.IDM.setStyleToPageHead(this.moduleObject.id+" img",styleObject);
+      window.IDM.setStyleToPageHead(this.moduleObject.id + " img", styleObject);
     },
     /**
      * 通用的url参数对象
@@ -148,32 +190,72 @@ export default {
       };
       return params;
     },
-    initData(){
+    initData() {
       let that = this;
       //所有地址的url参数转换
       var params = that.commonParam();
       switch (this.propData.dataSourceType) {
         case "customInterface":
-          this.propData.customInterfaceUrl&&window.IDM.http.get(this.propData.customInterfaceUrl,params)
-          .then((res) => {
-            //res.data
-            that.$set(that.propData,"imageUrl",that.getExpressData("resultData",that.propData.dataFiled,res.data));
-          })
-          .catch(function (error) {
-            
-          });
+          this.propData.customInterfaceUrl &&
+            window.IDM.http
+              .get(this.propData.customInterfaceUrl, params)
+              .then((res) => {
+                //res.data
+                that.$set(
+                  that.propData,
+                  "imageUrl",
+                  that.getExpressData("resultData", that.propData.dataFiled, res.data)
+                );
+                that.initComponentStatus(null, null, null, res.data);
+              })
+              .catch(function (error) {});
+          break;
+
+        case "datasource":
+          if (
+            this.propData.dataSourceSelectData &&
+            this.propData.dataSourceSelectData.length
+          ) {
+            IDM.datasource.request(
+              this.propData.dataSourceSelectData[0].id,
+              {
+                moduleObject: this.moduleObject,
+                param: this.commonParam(),
+              },
+              function (resData) {
+                //这里是请求成功的返回结果
+                that.$set(
+                  that.propData,
+                  "imageUrl",
+                  that.getExpressData("resultData", that.propData.dataFiled, resData)
+                );
+
+                that.initComponentStatus(null, null, null, resData);
+              },
+              function (error) {
+                //这里是请求失败的返回结果
+                that.isErrorStatus = true;
+              }
+            );
+          }
           break;
         case "pageCommonInterface":
           //使用通用接口直接跳过，在setContextValue执行
           break;
         case "customFunction":
-          if(this.propData.customFunction&&this.propData.customFunction.length>0){
+          if (this.propData.customFunction && this.propData.customFunction.length > 0) {
             var resValue = "";
             try {
-              resValue = window[this.propData.customFunction[0].name]&&window[this.propData.customFunction[0].name].call(this,{...params,...this.propData.customFunction[0].param,moduleObject:this.moduleObject});
-            } catch (error) {
-            }
-            that.propData.imageUrl = resValue;
+              resValue =
+                window[this.propData.customFunction[0].name] &&
+                window[this.propData.customFunction[0].name].call(this, {
+                  ...params,
+                  ...this.propData.customFunction[0].param,
+                  moduleObject: this.moduleObject,
+                });
+            } catch (error) {}
+            that.$set(that.propData, "imageUrl", resValue);
+            that.initComponentStatus(null, resValue, null, null);
           }
           break;
       }
@@ -181,53 +263,47 @@ export default {
     /**
      * 通用的获取表达式匹配后的结果
      */
-    getExpressData(dataName,dataFiled,resultData){
+    getExpressData(dataName, dataFiled, resultData) {
       //给defaultValue设置dataFiled的值
       var _defaultVal = undefined;
-      if(dataFiled){
-        var filedExp = dataFiled;
-        filedExp =
-          dataName +
-          (filedExp.startsWiths("[") ? "" : ".") +
-          filedExp;
-        var dataObject = { IDM: window.IDM };
-        dataObject[dataName] = resultData;
-        _defaultVal = window.IDM.express.replace.call(
-          this,
-          "@[" + filedExp + "]",
-          dataObject
-        );
+      if (dataFiled) {
+        _defaultVal = window.IDM.getExpressData(dataFiled, resultData);
       }
       //对结果进行再次函数自定义
-      if(this.propData.customFunction&&this.propData.customFunction.length>0){
+      if (this.propData.customFunction && this.propData.customFunction.length > 0) {
         var params = this.commonParam();
         var resValue = "";
         try {
-          resValue = window[this.propData.customFunction[0].name]&&window[this.propData.customFunction[0].name].call(this,{
-            ...params,
-            ...this.propData.customFunction[0].param,
-            moduleObject:this.moduleObject,
-            expressData:_defaultVal,interfaceData:resultData
-          });
-        } catch (error) {
-        }
+          resValue =
+            window[this.propData.customFunction[0].name] &&
+            window[this.propData.customFunction[0].name].call(this, {
+              ...params,
+              ...this.propData.customFunction[0].param,
+              moduleObject: this.moduleObject,
+              expressData: _defaultVal,
+              interfaceData: resultData,
+            });
+        } catch (error) {}
         _defaultVal = resValue;
       }
-      
+
       return _defaultVal;
     },
     /**
      * 内部点击事件
      */
-    imageClickHandle(){
+    imageClickHandle() {
       let that = this;
-      if(this.moduleObject.env=="develop"){
+      if (this.moduleObject.env == "develop") {
         //开发模式下不执行此事件
         return;
       }
       //获取所有的URL参数、页面ID（pageId）、以及所有组件的返回值（用范围值去调用IDM提供的方法取出所有的组件值）
       let urlObject = window.IDM.url.queryObject(),
-      pageId = window.IDM.broadcast&&window.IDM.broadcast.pageModule?window.IDM.broadcast.pageModule.id:"";
+        pageId =
+          window.IDM.broadcast && window.IDM.broadcast.pageModule
+            ? window.IDM.broadcast.pageModule.id
+            : "";
       //自定义函数
       /**
        * [
@@ -235,15 +311,23 @@ export default {
        * ]
        */
       var clickFunction = this.propData.clickFunction;
-      clickFunction.forEach(item=>{
-        window[item.name]&&window[item.name].call(this,{
-          routerId:this.moduleObject.routerId,
-          urlData:urlObject,
-          pageId,
-          customParam:item.param,
-          _this:this
+      clickFunction &&
+        clickFunction.forEach((item) => {
+          window[item.name] &&
+            window[item.name].call(this, {
+              routerId: this.moduleObject.routerId,
+              urlData: urlObject,
+              pageId,
+              customParam: item.param,
+              _this: this,
+            });
         });
-      })
+    },
+    showThisModuleHandle() {
+      this.componentVisibleStatus = true;
+    },
+    hideThisModuleHandle() {
+      this.componentVisibleStatus = false;
     },
     /**
      * 组件通信：接收消息的方法
@@ -253,10 +337,35 @@ export default {
      *  message:{发送的时候传输的消息对象数据}
      *  messageKey:"消息数据的key值，代表数据类型是什么，常用于表单交互上，比如通过这个key判断是什么数据"
      *  isAcross:如果为true则代表发送来源是其他页面的组件，默认为false
-     * } object 
+     * } object
      */
-    receiveBroadcastMessage(object){
-      console.log("组件收到消息",object)
+    receiveBroadcastMessage(object) {
+      console.log("组件收到消息", object);
+      if (object && object.type == "linkageShowModule") {
+        this.showThisModuleHandle();
+      } else if (object && object.type == "linkageHideModule") {
+        this.hideThisModuleHandle();
+      } else if (
+        object &&
+        object.type == "linkageResult" &&
+        this.propData.dataSourceType === "receiveMessage" &&
+        (!this.propData.receiveMessageKey ||
+          (this.propData.receiveMessageKey &&
+            this.propData.receiveMessageKey.length == 0) ||
+          (this.propData.receiveMessageKey &&
+            IDM.type(this.propData.receiveMessageKey) == "array" &&
+            this.propData.receiveMessageKey.indexOf(object.messageKey) > -1) ||
+          (IDM.type(this.propData.receiveMessageKey) == "string" &&
+            this.propData.receiveMessageKey == object.messageKey))
+      ) {
+        //结果格式化
+        this.$set(
+          this.propData,
+          "imageUrl",
+          this.getExpressData("", this.propData.dataFiled, object.message)
+        );
+        this.initComponentStatus(object, null, null, null);
+      }
     },
     /**
      * 组件通信：发送消息的方法
@@ -267,10 +376,10 @@ export default {
      *  rangeModule:"为空发送给全部，根据配置的属性中设定的值（值的内容是组件的packageid数组），不取子表的，比如直接 this.$root.propData.compositeAttr["attrKey"]（注意attrKey是属性中定义的bindKey）,这里的格式为：['1','2']"",
      *  className:"指定的组件类型，比如只给待办组件发送，然后再去过滤上面的值"
      *  globalSend:如果为true则全站发送消息，注意全站rangeModule是无效的，只有className才有效，默认为false
-     * } object 
+     * } object
      */
-    sendBroadcastMessage(object){
-        IDM.broadcast&&IDM.broadcast.send(object);
+    sendBroadcastMessage(object) {
+      IDM.broadcast && IDM.broadcast.send(object);
     },
     /**
      * 交互功能：设置组件的上下文内容值
@@ -281,15 +390,29 @@ export default {
      * }
      */
     setContextValue(object) {
-      console.log("图片统一接口设置的值", object,this.propData.dataName,this.propData.dataFiled);
+      console.log(
+        "图片统一接口设置的值",
+        object,
+        this.propData.dataName,
+        this.propData.dataFiled
+      );
       if (object.type != "pageCommonInterface") {
         return;
       }
       //这里使用的是子表，所以要循环匹配所有子表的属性然后再去设置修改默认值
       if (object.key == this.propData.dataName) {
-        this.$set(this.propData,"imageUrl",this.getExpressData(this.propData.dataName,this.propData.dataFiled,object.data));
+        this.$set(
+          this.propData,
+          "imageUrl",
+          this.getExpressData(
+            this.propData.dataName,
+            this.propData.dataFiled,
+            object.data
+          )
+        );
+        this.initComponentStatus(null, null, object.data, null);
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>

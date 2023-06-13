@@ -7,7 +7,7 @@
   -->
   <div
     idm-ctrl="idm_module"
-    v-show="componentVisibleStatus"
+    v-if="componentVisibleStatus"
     :id="moduleObject.id"
     :idm-ctrl-id="moduleObject.id"
   >
@@ -49,6 +49,12 @@ export default {
       componentVisibleStatus: false,
       isErrorStatus: false,
       iconStyleObject: {},
+      functionParam:{
+        linkMessageObject:null,
+        customFunData:null,
+        pageInterfaceData:null,
+        dataSourceData:null
+      }
     };
   },
   props: {},
@@ -115,6 +121,10 @@ export default {
         this.componentVisibleStatus = true;
         return;
       }
+      this.functionParam.linkMessageObject = linkMessageObject;
+      this.functionParam.customFunData = customFunData;
+      this.functionParam.pageInterfaceData = pageInterfaceData;
+      this.functionParam.dataSourceData = dataSourceData;
       switch (this.propData.defaultStatus) {
         case "default":
           this.componentVisibleStatus = true;
@@ -439,6 +449,7 @@ export default {
               pageId,
               customParam: item.param,
               _this: this,
+              ...this.functionParam
             });
         });
     },

@@ -8,7 +8,7 @@
   <div
     idm-ctrl="idm_module"
     :id="moduleObject.id"
-    v-show="componentVisibleStatus"
+    v-if="componentVisibleStatus"
     :idm-ctrl-id="moduleObject.id"
     :style="{
       cursor:
@@ -51,6 +51,12 @@ export default {
       propData: this.$root.propData.compositeAttr || {},
       componentVisibleStatus: false,
       isErrorStatus: false,
+      functionParam:{
+        linkMessageObject:null,
+        customFunData:null,
+        pageInterfaceData:null,
+        dataSourceData:null
+      }
     };
   },
   props: {},
@@ -76,6 +82,10 @@ export default {
         this.componentVisibleStatus = true;
         return;
       }
+      this.functionParam.linkMessageObject = linkMessageObject;
+      this.functionParam.customFunData = customFunData;
+      this.functionParam.pageInterfaceData = pageInterfaceData;
+      this.functionParam.dataSourceData = dataSourceData;
       switch (this.propData.defaultStatus) {
         case "default":
           this.componentVisibleStatus = true;
@@ -324,6 +334,7 @@ export default {
               pageId,
               customParam: item.param,
               _this: this,
+              ...this.functionParam
             });
         });
     },

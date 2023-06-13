@@ -11,7 +11,7 @@
     :id="moduleObject.id"
     :idm-ctrl-id="moduleObject.id"
     :title="propData.htmlTitle ? getTitleFont(propData.fontContent) : ''"
-    v-show="componentVisibleStatus"
+    v-if="componentVisibleStatus"
     :style="fontStyleObject"
     @click="textClickHandle"
   >
@@ -51,6 +51,12 @@ export default {
       componentVisibleStatus: false,
       isErrorStatus: false,
       fontStyleObject: {},
+      functionParam:{
+        linkMessageObject:null,
+        customFunData:null,
+        pageInterfaceData:null,
+        dataSourceData:null
+      }
     };
   },
   props: {},
@@ -87,6 +93,10 @@ export default {
         this.componentVisibleStatus = true;
         return;
       }
+      this.functionParam.linkMessageObject = linkMessageObject;
+      this.functionParam.customFunData = customFunData;
+      this.functionParam.pageInterfaceData = pageInterfaceData;
+      this.functionParam.dataSourceData = dataSourceData;
       switch (this.propData.defaultStatus) {
         case "default":
           this.componentVisibleStatus = true;
@@ -411,6 +421,7 @@ export default {
               pageId,
               customParam: item.param,
               _this: this,
+              ...this.functionParam
             });
         });
     },

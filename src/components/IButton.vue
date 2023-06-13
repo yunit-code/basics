@@ -53,48 +53,15 @@ export default {
      */
     convertAttrToButtonActiveStyle(){
       var styleObject = {};
-      if(this.propData.bgSizeActive&&this.propData.bgSizeActive=="custom"){
-        styleObject["background-size"]=(this.propData.bgSizeWidthActive?this.propData.bgSizeWidthActive.inputVal+this.propData.bgSizeWidthActive.selectVal:"auto")+" "+(this.propData.bgSizeHeightActive?this.propData.bgSizeHeightActive.inputVal+this.propData.bgSizeHeightActive.selectVal:"auto")
-      }else if(this.propData.bgSizeActive){
-        styleObject["background-size"]=this.propData.bgSizeActive;
-      }
-      if(this.propData.positionXActive&&this.propData.positionXActive.inputVal){
-        styleObject["background-position-x"]=this.propData.positionXActive.inputVal+this.propData.positionXActive.selectVal;
-      }
-      if(this.propData.positionYActive&&this.propData.positionYActive.inputVal){
-        styleObject["background-position-y"]=this.propData.positionYActive.inputVal+this.propData.positionYActive.selectVal;
-      }
-      for (const key in this.propData) {
+      const keyList=["borderActive","fontActive"];
+      for (const iKey in keyList) {
+        const key = keyList[iKey];
         if (this.propData.hasOwnProperty.call(this.propData, key)) {
           const element = this.propData[key];
           if(!element&&element!==false&&element!=0){
             continue;
           }
           switch (key) {
-            case "bgColorActive":
-              if(element&&element.hex8){
-                styleObject["background-color"]=IDM.hex8ToRgbaString(element.hex8);
-              }
-              break;
-            case "bgImgUrlActive":
-              styleObject["background-image"]=`url(${window.IDM.url.getWebPath(element)})`;
-              break;
-            case "positionXActive":
-              //背景横向偏移
-              
-              break;
-            case "positionYActive":
-              //背景纵向偏移
-              
-              break;
-            case "bgRepeatActive":
-              //平铺模式
-                styleObject["background-repeat"]=element;
-              break;
-            case "bgAttachmentActive":
-              //背景模式
-                styleObject["background-attachment"]=element;
-              break;
             case "borderActive":
               IDM.style.setBorderStyle(styleObject, element)
               break;
@@ -111,6 +78,17 @@ export default {
           }
         }
       }
+      IDM.style.setBackgroundStyle(styleObject, this.propData, {
+        bgSize: "bgSizeActive",
+        bgSizeWidth: "bgSizeWidthActive",
+        bgSizeHeight: "bgSizeHeightActive",
+        positionX: "positionXActive",
+        positionY: "positionYActive",
+        bgColor: "bgColorActive",
+        bgImgUrl: "bgImgUrlActive",
+        bgRepeat: "bgRepeatActive",
+        bgAttachment: "bgAttachmentActive",
+      });
       window.IDM.setStyleToPageHead(this.moduleObject.id+" button:active",styleObject);
     },
     /**
@@ -118,48 +96,15 @@ export default {
      */
     convertAttrToButtonFocusStyle(){
       var styleObject = {};
-      if(this.propData.bgSizeFocus&&this.propData.bgSizeFocus=="custom"){
-        styleObject["background-size"]=(this.propData.bgSizeWidthFocus?this.propData.bgSizeWidthFocus.inputVal+this.propData.bgSizeWidthFocus.selectVal:"auto")+" "+(this.propData.bgSizeHeightFocus?this.propData.bgSizeHeightFocus.inputVal+this.propData.bgSizeHeightFocus.selectVal:"auto")
-      }else if(this.propData.bgSizeFocus){
-        styleObject["background-size"]=this.propData.bgSizeFocus;
-      }
-      if(this.propData.positionXFocus&&this.propData.positionXFocus.inputVal){
-        styleObject["background-position-x"]=this.propData.positionXFocus.inputVal+this.propData.positionXFocus.selectVal;
-      }
-      if(this.propData.positionYFocus&&this.propData.positionYFocus.inputVal){
-        styleObject["background-position-y"]=this.propData.positionYFocus.inputVal+this.propData.positionYFocus.selectVal;
-      }
-      for (const key in this.propData) {
+      const keyList=["borderFocus","fontFocus"];
+      for (const iKey in keyList) {
+        const key = keyList[iKey];
         if (this.propData.hasOwnProperty.call(this.propData, key)) {
           const element = this.propData[key];
           if(!element&&element!==false&&element!=0){
             continue;
           }
           switch (key) {
-            case "bgColorFocus":
-              if(element&&element.hex8){
-                styleObject["background-color"]=IDM.hex8ToRgbaString(element.hex8);
-              }
-              break;
-            case "bgImgUrlFocus":
-              styleObject["background-image"]=`url(${window.IDM.url.getWebPath(element)})`;
-              break;
-            case "positionXFocus":
-              //背景横向偏移
-              
-              break;
-            case "positionYFocus":
-              //背景纵向偏移
-              
-              break;
-            case "bgRepeatFocus":
-              //平铺模式
-                styleObject["background-repeat"]=element;
-              break;
-            case "bgAttachmentFocus":
-              //背景模式
-                styleObject["background-attachment"]=element;
-              break;
             case "borderFocus":
               IDM.style.setBorderStyle(styleObject, element)
               break;
@@ -176,6 +121,17 @@ export default {
           }
         }
       }
+      IDM.style.setBackgroundStyle(styleObject, this.propData, {
+        bgSize: "bgSizeFocus",
+        bgSizeWidth: "bgSizeWidthFocus",
+        bgSizeHeight: "bgSizeHeightFocus",
+        positionX: "positionXFocus",
+        positionY: "positionYFocus",
+        bgColor: "bgColorFocus",
+        bgImgUrl: "bgImgUrlFocus",
+        bgRepeat: "bgRepeatFocus",
+        bgAttachment: "bgAttachmentFocus",
+      });
       window.IDM.setStyleToPageHead(this.moduleObject.id+" button:focus",styleObject);
     },
     /**
@@ -183,48 +139,15 @@ export default {
      */
     convertAttrToButtonHoverStyle(){
       var styleObject = {};
-      if(this.propData.bgSizeHover&&this.propData.bgSizeHover=="custom"){
-        styleObject["background-size"]=(this.propData.bgSizeWidthHover?this.propData.bgSizeWidthHover.inputVal+this.propData.bgSizeWidthHover.selectVal:"auto")+" "+(this.propData.bgSizeHeightHover?this.propData.bgSizeHeightHover.inputVal+this.propData.bgSizeHeightHover.selectVal:"auto")
-      }else if(this.propData.bgSizeHover){
-        styleObject["background-size"]=this.propData.bgSizeHover;
-      }
-      if(this.propData.positionXHover&&this.propData.positionXHover.inputVal){
-        styleObject["background-position-x"]=this.propData.positionXHover.inputVal+this.propData.positionXHover.selectVal;
-      }
-      if(this.propData.positionYHover&&this.propData.positionYHover.inputVal){
-        styleObject["background-position-y"]=this.propData.positionYHover.inputVal+this.propData.positionYHover.selectVal;
-      }
-      for (const key in this.propData) {
+      const keyList=["borderHover","fontHover"];
+      for (const iKey in keyList) {
+        const key = keyList[iKey];
         if (this.propData.hasOwnProperty.call(this.propData, key)) {
           const element = this.propData[key];
           if(!element&&element!==false&&element!=0){
             continue;
           }
           switch (key) {
-            case "bgColorHover":
-              if(element&&element.hex8){
-                styleObject["background-color"]=IDM.hex8ToRgbaString(element.hex8);
-              }
-              break;
-            case "bgImgUrlHover":
-              styleObject["background-image"]=`url(${window.IDM.url.getWebPath(element)})`;
-              break;
-            case "positionXHover":
-              //背景横向偏移
-              
-              break;
-            case "positionYHover":
-              //背景纵向偏移
-              
-              break;
-            case "bgRepeatHover":
-              //平铺模式
-                styleObject["background-repeat"]=element;
-              break;
-            case "bgAttachmentHover":
-              //背景模式
-                styleObject["background-attachment"]=element;
-              break;
             case "borderHover":
               IDM.style.setBorderStyle(styleObject, element)
               break;
@@ -241,6 +164,17 @@ export default {
           }
         }
       }
+      IDM.style.setBackgroundStyle(styleObject, this.propData, {
+        bgSize: "bgSizeHover",
+        bgSizeWidth: "bgSizeWidthHover",
+        bgSizeHeight: "bgSizeHeightHover",
+        positionX: "positionXHover",
+        positionY: "positionYHover",
+        bgColor: "bgColorHover",
+        bgImgUrl: "bgImgUrlHover",
+        bgRepeat: "bgRepeatHover",
+        bgAttachment: "bgAttachmentHover",
+      });
       window.IDM.setStyleToPageHead(this.moduleObject.id+" button:hover",styleObject);
     },
     /**
@@ -248,48 +182,15 @@ export default {
      */
     convertAttrToButtonDefaultStyle(){
       var styleObject = {};
-      if(this.propData.bgSizeDefault&&this.propData.bgSizeDefault=="custom"){
-        styleObject["background-size"]=(this.propData.bgSizeWidthDefault?this.propData.bgSizeWidthDefault.inputVal+this.propData.bgSizeWidthDefault.selectVal:"auto")+" "+(this.propData.bgSizeHeightDefault?this.propData.bgSizeHeightDefault.inputVal+this.propData.bgSizeHeightDefault.selectVal:"auto")
-      }else if(this.propData.bgSizeDefault){
-        styleObject["background-size"]=this.propData.bgSizeDefault;
-      }
-      if(this.propData.positionXDefault&&this.propData.positionXDefault.inputVal){
-        styleObject["background-position-x"]=this.propData.positionXDefault.inputVal+this.propData.positionXDefault.selectVal;
-      }
-      if(this.propData.positionYDefault&&this.propData.positionYDefault.inputVal){
-        styleObject["background-position-y"]=this.propData.positionYDefault.inputVal+this.propData.positionYDefault.selectVal;
-      }
-      for (const key in this.propData) {
+      const keyList=["borderDefault","fontDefault"];
+      for (const iKey in keyList) {
+        const key = keyList[iKey];
         if (this.propData.hasOwnProperty.call(this.propData, key)) {
           const element = this.propData[key];
           if(!element&&element!==false&&element!=0){
             continue;
           }
           switch (key) {
-            case "bgColorDefault":
-              if(element&&element.hex8){
-                styleObject["background-color"]=IDM.hex8ToRgbaString(element.hex8);
-              }
-              break;
-            case "bgImgUrlDefault":
-              styleObject["background-image"]=`url(${window.IDM.url.getWebPath(element)})`;
-              break;
-            case "positionXDefault":
-              //背景横向偏移
-              
-              break;
-            case "positionYDefault":
-              //背景纵向偏移
-              
-              break;
-            case "bgRepeatDefault":
-              //平铺模式
-                styleObject["background-repeat"]=element;
-              break;
-            case "bgAttachmentDefault":
-              //背景模式
-                styleObject["background-attachment"]=element;
-              break;
             case "borderDefault":
               IDM.style.setBorderStyle(styleObject, element)
               break;
@@ -306,6 +207,17 @@ export default {
           }
         }
       }
+      IDM.style.setBackgroundStyle(styleObject, this.propData, {
+        bgSize: "bgSizeDefault",
+        bgSizeWidth: "bgSizeWidthDefault",
+        bgSizeHeight: "bgSizeHeightDefault",
+        positionX: "positionXDefault",
+        positionY: "positionYDefault",
+        bgColor: "bgColorDefault",
+        bgImgUrl: "bgImgUrlDefault",
+        bgRepeat: "bgRepeatDefault",
+        bgAttachment: "bgAttachmentDefault",
+      });
       window.IDM.setStyleToPageHead(this.moduleObject.id+" button,.emptyclassname",styleObject);
     },
     /**
@@ -313,7 +225,9 @@ export default {
      */
     convertAttrToButtonIconStyle(){
       var styleObject = {};
-      for (const key in this.propData) {
+      const keyList=["iconColor"];
+      for (const iKey in keyList) {
+        const key = keyList[iKey];
         if (this.propData.hasOwnProperty.call(this.propData, key)) {
           const element = this.propData[key];
           if(!element&&element!==false&&element!=0){
@@ -334,7 +248,9 @@ export default {
      */
     convertAttrToButtonBaseStyle(){
       var styleObject = {};
-      for (const key in this.propData) {
+      const keyList=["width","height","box"];
+      for (const iKey in keyList) {
+        const key = keyList[iKey];
         if (this.propData.hasOwnProperty.call(this.propData, key)) {
           const element = this.propData[key];
           if(!element&&element!==false&&element!=0){

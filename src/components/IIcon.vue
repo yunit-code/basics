@@ -199,7 +199,9 @@ export default {
      */
     convertAttrToStyleObject() {
       var styleObject = {};
-      for (const key in this.propData) {
+      const keyList=["box","border"];
+      for (const iKey in keyList) {
+        const key = keyList[iKey];
         if (this.propData.hasOwnProperty.call(this.propData, key)) {
           const element = this.propData[key];
           if (!element && element !== false && element != 0) {
@@ -226,7 +228,9 @@ export default {
      */
     convertAttrToIconStyleObject() {
       var styleObject = {};
-      for (const key in this.propData) {
+      const keyList=["iconColor","iconSize"];
+      for (const iKey in keyList) {
+        const key = keyList[iKey];
         if (this.propData.hasOwnProperty.call(this.propData, key)) {
           const element = this.propData[key];
           if (!element && element !== false && element != 0) {

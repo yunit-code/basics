@@ -5,53 +5,62 @@
     id：使用moduleObject.id，如果id不使用这个将会被idm-ctrl-id属性替换
     idm-ctrl-id：组件的id，这个必须不能为空
   -->
-  <div idm-ctrl="idm_module" :id="moduleObject.id" :idm-ctrl-id="moduleObject.id"
-    v-if="componentVisibleStatus">
+  <div
+    idm-ctrl="idm_module"
+    :id="moduleObject.id"
+    :idm-ctrl-id="moduleObject.id"
+    v-if="componentVisibleStatus"
+  >
     <!--
       组件内部容器
       增加class="drag_container" 必选
       idm-ctrl-id：组件的id，这个必须不能为空
       idm-container-index  组件的内部容器索引，不重复唯一且不变，必选
     -->
-    <a @click="linkClickHandle" class="idm-module-alink" :class="{'ellipsis':propData.ellipsis}" href="javascript:;" :title="linkData.linkText">{{linkData.linkText}}</a>
+    <a
+      @click="linkClickHandle"
+      class="idm-module-alink"
+      :class="{ ellipsis: propData.ellipsis }"
+      href="javascript:;"
+      :title="linkData.linkText"
+      >{{ linkData.linkText }}</a
+    >
   </div>
 </template>
 
 <script>
 export default {
-  name: 'ILink',
-  data(){
+  name: "ILink",
+  data() {
     return {
-      errorMessage:"",
-      thisValue:"",
-      moduleObject:{},
-      propData:this.$root.propData.compositeAttr||{},
+      errorMessage: "",
+      thisValue: "",
+      moduleObject: {},
+      propData: this.$root.propData.compositeAttr || {},
       componentVisibleStatus: false,
       isErrorStatus: false,
       //最终显示的文字
       linkData: { linkText: "" },
-      functionParam:{
-        linkMessageObject:null,
-        customFunData:null,
-        pageInterfaceData:null,
-        dataSourceData:null
-      }
-    }
+      functionParam: {
+        linkMessageObject: null,
+        customFunData: null,
+        pageInterfaceData: null,
+        dataSourceData: null,
+      },
+    };
   },
-  props: {
-  },
+  props: {},
   created() {
-    this.moduleObject = this.$root.moduleObject
+    this.moduleObject = this.$root.moduleObject;
     this.setLinkText();
     // console.log(this.moduleObject)
     // this.propData = testAttr;
     this.convertAttrToStyleObject();
     this.initComponentStatus();
   },
-  mounted() {
-  },
+  mounted() {},
   destroyed() {},
-  methods:{
+  methods: {
     /**
      * 初始化控件的状态
      */
@@ -61,7 +70,10 @@ export default {
       pageInterfaceData,
       dataSourceData
     ) {
-      if (this.moduleObject.env == undefined || this.moduleObject.env == "develop") {
+      if (
+        this.moduleObject.env == undefined ||
+        this.moduleObject.env == "develop"
+      ) {
         this.componentVisibleStatus = true;
         return;
       }
@@ -116,28 +128,31 @@ export default {
     /**
      * 把属性转换成超链接的样式设置(active)
      */
-    convertAttrToLinkActiveStyle(){
+    convertAttrToLinkActiveStyle() {
       var styleObject = {};
-      const keyList=["borderActive","fontActive"];
+      const keyList = ["borderActive", "fontActive"];
       for (const iKey in keyList) {
         const key = keyList[iKey];
         if (this.propData.hasOwnProperty.call(this.propData, key)) {
           const element = this.propData[key];
-          if(!element&&element!==false&&element!=0){
+          if (!element && element !== false && element != 0) {
             continue;
           }
           switch (key) {
             case "borderActive":
-              IDM.style.setBorderStyle(styleObject, element)
+              IDM.style.setBorderStyle(styleObject, element);
               break;
             case "fontActive":
-              IDM.style.setFontStyle(styleObject, element)
-              if(element.fontSize&&element.fontSizeUnit){
-                window.IDM.setStyleToPageHead(this.moduleObject.id+" button:active .button-svg-icon",{
-                  "font-size":element.fontSize+element.fontSizeUnit,
-                  "max-height":element.fontSize+element.fontSizeUnit,
-                  "width":element.fontSize+element.fontSizeUnit,
-                });
+              IDM.style.setFontStyle(styleObject, element);
+              if (element.fontSize && element.fontSizeUnit) {
+                window.IDM.setStyleToPageHead(
+                  this.moduleObject.id + " button:active .button-svg-icon",
+                  {
+                    "font-size": element.fontSize + element.fontSizeUnit,
+                    "max-height": element.fontSize + element.fontSizeUnit,
+                    width: element.fontSize + element.fontSizeUnit,
+                  }
+                );
               }
               break;
           }
@@ -154,33 +169,39 @@ export default {
         bgRepeat: "bgRepeatActive",
         bgAttachment: "bgAttachmentActive",
       });
-      window.IDM.setStyleToPageHead(this.moduleObject.id+" a:active",styleObject);
+      window.IDM.setStyleToPageHead(
+        this.moduleObject.id + " a:active",
+        styleObject
+      );
     },
     /**
      * 把属性转换成超链接的样式设置(focus)
      */
-    convertAttrToLinkFocusStyle(){
+    convertAttrToLinkFocusStyle() {
       var styleObject = {};
-      const keyList=["borderFocus","fontFocus"];
+      const keyList = ["borderFocus", "fontFocus"];
       for (const iKey in keyList) {
         const key = keyList[iKey];
         if (this.propData.hasOwnProperty.call(this.propData, key)) {
           const element = this.propData[key];
-          if(!element&&element!==false&&element!=0){
+          if (!element && element !== false && element != 0) {
             continue;
           }
           switch (key) {
             case "borderFocus":
-              IDM.style.setBorderStyle(styleObject, element)
+              IDM.style.setBorderStyle(styleObject, element);
               break;
             case "fontFocus":
-              IDM.style.setFontStyle(styleObject, element)
-              if(element.fontSize&&element.fontSizeUnit){
-                window.IDM.setStyleToPageHead(this.moduleObject.id+" button:focus .button-svg-icon",{
-                  "font-size":element.fontSize+element.fontSizeUnit,
-                  "max-height":element.fontSize+element.fontSizeUnit,
-                  "width":element.fontSize+element.fontSizeUnit,
-                });
+              IDM.style.setFontStyle(styleObject, element);
+              if (element.fontSize && element.fontSizeUnit) {
+                window.IDM.setStyleToPageHead(
+                  this.moduleObject.id + " button:focus .button-svg-icon",
+                  {
+                    "font-size": element.fontSize + element.fontSizeUnit,
+                    "max-height": element.fontSize + element.fontSizeUnit,
+                    width: element.fontSize + element.fontSizeUnit,
+                  }
+                );
               }
               break;
           }
@@ -197,33 +218,39 @@ export default {
         bgRepeat: "bgRepeatFocus",
         bgAttachment: "bgAttachmentFocus",
       });
-      window.IDM.setStyleToPageHead(this.moduleObject.id+" a:focus",styleObject);
+      window.IDM.setStyleToPageHead(
+        this.moduleObject.id + " a:focus",
+        styleObject
+      );
     },
     /**
      * 把属性转换成超链接的样式设置(hover)
      */
-    convertAttrToLinkHoverStyle(){
+    convertAttrToLinkHoverStyle() {
       var styleObject = {};
-      const keyList=["borderHover","fontHover"];
+      const keyList = ["borderHover", "fontHover"];
       for (const iKey in keyList) {
         const key = keyList[iKey];
         if (this.propData.hasOwnProperty.call(this.propData, key)) {
           const element = this.propData[key];
-          if(!element&&element!==false&&element!=0){
+          if (!element && element !== false && element != 0) {
             continue;
           }
           switch (key) {
             case "borderHover":
-              IDM.style.setBorderStyle(styleObject, element)
+              IDM.style.setBorderStyle(styleObject, element);
               break;
             case "fontHover":
-              IDM.style.setFontStyle(styleObject, element)
-              if(element.fontSize&&element.fontSizeUnit){
-                window.IDM.setStyleToPageHead(this.moduleObject.id+" button:hover .button-svg-icon",{
-                  "font-size":element.fontSize+element.fontSizeUnit,
-                  "max-height":element.fontSize+element.fontSizeUnit,
-                  "width":element.fontSize+element.fontSizeUnit,
-                });
+              IDM.style.setFontStyle(styleObject, element);
+              if (element.fontSize && element.fontSizeUnit) {
+                window.IDM.setStyleToPageHead(
+                  this.moduleObject.id + " button:hover .button-svg-icon",
+                  {
+                    "font-size": element.fontSize + element.fontSizeUnit,
+                    "max-height": element.fontSize + element.fontSizeUnit,
+                    width: element.fontSize + element.fontSizeUnit,
+                  }
+                );
               }
               break;
           }
@@ -240,33 +267,39 @@ export default {
         bgRepeat: "bgRepeatHover",
         bgAttachment: "bgAttachmentHover",
       });
-      window.IDM.setStyleToPageHead(this.moduleObject.id+" a:hover",styleObject);
+      window.IDM.setStyleToPageHead(
+        this.moduleObject.id + " a:hover",
+        styleObject
+      );
     },
     /**
      * 把属性转换成超链接的样式设置(默认)
      */
-    convertAttrToLinkDefaultStyle(){
+    convertAttrToLinkDefaultStyle() {
       var styleObject = {};
-      const keyList=["borderDefault","fontDefault"];
+      const keyList = ["borderDefault", "fontDefault"];
       for (const iKey in keyList) {
         const key = keyList[iKey];
         if (this.propData.hasOwnProperty.call(this.propData, key)) {
           const element = this.propData[key];
-          if(!element&&element!==false&&element!=0){
+          if (!element && element !== false && element != 0) {
             continue;
           }
           switch (key) {
             case "borderDefault":
-              IDM.style.setBorderStyle(styleObject, element)
+              IDM.style.setBorderStyle(styleObject, element);
               break;
             case "fontDefault":
-              IDM.style.setFontStyle(styleObject, element)
-              if(element.fontSize&&element.fontSizeUnit){
-                window.IDM.setStyleToPageHead(this.moduleObject.id+" button .button-svg-icon",{
-                  "font-size":element.fontSize+element.fontSizeUnit,
-                  "max-height":element.fontSize+element.fontSizeUnit,
-                  "width":element.fontSize+element.fontSizeUnit,
-                });
+              IDM.style.setFontStyle(styleObject, element);
+              if (element.fontSize && element.fontSizeUnit) {
+                window.IDM.setStyleToPageHead(
+                  this.moduleObject.id + " button .button-svg-icon",
+                  {
+                    "font-size": element.fontSize + element.fontSizeUnit,
+                    "max-height": element.fontSize + element.fontSizeUnit,
+                    width: element.fontSize + element.fontSizeUnit,
+                  }
+                );
               }
               break;
           }
@@ -283,52 +316,52 @@ export default {
         bgRepeat: "bgRepeatDefault",
         bgAttachment: "bgAttachmentDefault",
       });
-      window.IDM.setStyleToPageHead(this.moduleObject.id+" a",styleObject);
+      window.IDM.setStyleToPageHead(this.moduleObject.id + " a", styleObject);
     },
     /**
      * 把属性转换成超链接的样式设置(基础)
      */
-    convertAttrToLinkBaseStyle(){
+    convertAttrToLinkBaseStyle() {
       var styleObject = {};
-      const keyList=["width","height","box"];
+      const keyList = ["width", "height", "box"];
       for (const iKey in keyList) {
         const key = keyList[iKey];
         if (this.propData.hasOwnProperty.call(this.propData, key)) {
           const element = this.propData[key];
-          if(!element&&element!==false&&element!=0){
+          if (!element && element !== false && element != 0) {
             continue;
           }
           switch (key) {
             case "width":
             case "height":
-              if(element!="auto"){
-                styleObject[key]=element;
+              if (element != "auto") {
+                styleObject[key] = element;
               }
               break;
             case "box":
-              IDM.style.setBoxStyle(styleObject, element)
+              IDM.style.setBoxStyle(styleObject, element);
               break;
           }
         }
       }
-      window.IDM.setStyleToPageHead(this.moduleObject.id+" a",styleObject);
+      window.IDM.setStyleToPageHead(this.moduleObject.id + " a", styleObject);
     },
     /**
      * 提供父级组件调用的刷新prop数据组件
      */
-    propDataWatchHandle(propData){
-      this.propData = propData.compositeAttr||{};
+    propDataWatchHandle(propData) {
+      this.propData = propData.compositeAttr || {};
       this.setLinkText();
       this.convertAttrToStyleObject();
     },
     /**
      * 把属性转换成样式对象
      */
-    convertAttrToStyleObject(){
+    convertAttrToStyleObject() {
       //默认值
       this.convertAttrToLinkBaseStyle();
       //样式设置下面四种状态:
-      if(this.propData.linkType=="custom"){
+      if (this.propData.linkType == "custom") {
         //默认
         this.convertAttrToLinkDefaultStyle();
         //hover
@@ -356,7 +389,11 @@ export default {
                 //res.data
 
                 that.setLinkText(
-                  that.getExpressData("resultData", that.propData.dataFiled, res.data)
+                  that.getExpressData(
+                    "resultData",
+                    that.propData.dataFiled,
+                    res.data
+                  )
                 );
                 that.initComponentStatus(null, null, null, res.data);
                 // that.propData.fontContent = ;
@@ -378,7 +415,11 @@ export default {
               function (resData) {
                 //这里是请求成功的返回结果
                 that.setLinkText(
-                  that.getExpressData("resultData", that.propData.dataFiled, resData)
+                  that.getExpressData(
+                    "resultData",
+                    that.propData.dataFiled,
+                    resData
+                  )
                 );
 
                 that.initComponentStatus(null, null, null, resData);
@@ -394,7 +435,10 @@ export default {
           //使用通用接口直接跳过，在setContextValue执行
           break;
         case "customFunction":
-          if (this.propData.customFunction && this.propData.customFunction.length > 0) {
+          if (
+            this.propData.customFunction &&
+            this.propData.customFunction.length > 0
+          ) {
             var resValue = "";
             try {
               resValue =
@@ -421,7 +465,10 @@ export default {
         _defaultVal = window.IDM.getExpressData(dataFiled, resultData);
       }
       //对结果进行再次函数自定义
-      if (this.propData.customFunction && this.propData.customFunction.length > 0) {
+      if (
+        this.propData.customFunction &&
+        this.propData.customFunction.length > 0
+      ) {
         var params = this.commonParam();
         var resValue = "";
         try {
@@ -458,20 +505,25 @@ export default {
     /**
      * 内部点击事件
      */
-    linkClickHandle(e){
+    linkClickHandle(e) {
       let that = this;
-      if(this.moduleObject.env=="develop"){
+      if (this.moduleObject.env == "develop") {
         //开发模式下不执行此事件
         return;
       }
       //获取所有的URL参数、页面ID（pageId）、以及所有组件的返回值（用范围值去调用IDM提供的方法取出所有的组件值）
       let urlObject = window.IDM.url.queryObject(),
-      pageId = window.IDM.broadcast&&window.IDM.broadcast.pageModule?window.IDM.broadcast.pageModule.id:"";
-      if(this.propData.linkUrl){
-        if(this.propData.openNewPage){
+        pageId =
+          window.IDM.broadcast && window.IDM.broadcast.pageModule
+            ? window.IDM.broadcast.pageModule.id
+            : "";
+      if (this.propData.linkUrl) {
+        if (this.propData.openNewPage) {
           window.open(window.IDM.url.getWebPath(this.propData.linkUrl));
-        }else{
-          window.location.href=window.IDM.url.getWebPath(this.propData.linkUrl);
+        } else {
+          window.location.href = window.IDM.url.getWebPath(
+            this.propData.linkUrl
+          );
         }
       }
       //自定义函数
@@ -481,15 +533,17 @@ export default {
        * ]
        */
       var clickFunction = this.propData.clickFunction;
-      clickFunction&&clickFunction.forEach(item=>{
-        window[item.name]&&window[item.name].call(this,{
-          urlData:urlObject,
-          pageId,
-          customParam:item.param,
-          _this:this,
-          ...this.functionParam
+      clickFunction &&
+        clickFunction.forEach((item) => {
+          window[item.name] &&
+            window[item.name].call(this, {
+              urlData: urlObject,
+              pageId,
+              customParam: item.param,
+              _this: this,
+              ...this.functionParam,
+            });
         });
-      })
     },
     showThisModuleHandle() {
       this.componentVisibleStatus = true;
@@ -505,9 +559,9 @@ export default {
      *  message:{发送的时候传输的消息对象数据}
      *  messageKey:"消息数据的key值，代表数据类型是什么，常用于表单交互上，比如通过这个key判断是什么数据"
      *  isAcross:如果为true则代表发送来源是其他页面的组件，默认为false
-     * } object 
+     * } object
      */
-    receiveBroadcastMessage(object){
+    receiveBroadcastMessage(object) {
       if (object && object.type == "linkageShowModule") {
         this.showThisModuleHandle();
       } else if (object && object.type == "linkageHideModule") {
@@ -541,10 +595,10 @@ export default {
      *  rangeModule:"为空发送给全部，根据配置的属性中设定的值（值的内容是组件的packageid数组），不取子表的，比如直接 this.$root.propData.compositeAttr["attrKey"]（注意attrKey是属性中定义的bindKey）,这里的格式为：['1','2']"",
      *  className:"指定的组件类型，比如只给待办组件发送，然后再去过滤上面的值"
      *  globalSend:如果为true则全站发送消息，注意全站rangeModule是无效的，只有className才有效，默认为false
-     * } object 
+     * } object
      */
-    sendBroadcastMessage(object){
-        window.IDM.broadcast&&window.IDM.broadcast.send(object);
+    sendBroadcastMessage(object) {
+      window.IDM.broadcast && window.IDM.broadcast.send(object);
     },
     /**
      * 交互功能：设置组件的上下文内容值
@@ -554,7 +608,7 @@ export default {
      *  data:"数据集，内容为：字符串 or 数组 or 对象"
      * }
      */
-    setContextValue(object){
+    setContextValue(object) {
       if (object.type != "pageCommonInterface") {
         return;
       }
@@ -578,53 +632,53 @@ export default {
      *    data:{要返回的值，内容为：字符串 or 数组 or 对象},
      * }
      */
-    getContextValue(){
+    getContextValue() {},
+    getStyle(key) {
+      let styles = {};
+      switch (key) {
+        case "root":
+          break;
+        default:
+          break;
+      }
+      return styles;
     },
-    getStyle(key){
-        let styles = {};
-        switch (key) {
-            case "root":
-            break;
-            default:
-            break;
-        }
-        return styles;
-    }
-  }
-}
+  },
+};
 </script>
 <style lang="scss" scoped>
-.idm-module-alink{
-    color: #1890ff;
+.idm-module-alink {
+  color: #1890ff;
+  text-decoration: none;
+  background-color: transparent;
+  outline: none;
+  cursor: pointer;
+  transition: color 0.3s;
+  &:hover {
+    color: #40a9ff;
+  }
+
+  &:active {
+    color: #096dd9;
+  }
+
+  &:active,
+  a:hover {
     text-decoration: none;
-    background-color: transparent;
-    outline: none;
-    cursor: pointer;
-    transition: color .3s;
-    &:hover {
-        color: #40a9ff
-    }
+    outline: 0;
+  }
 
-    &:active {
-        color: #096dd9
-    }
-
-    &:active,a:hover {
-        text-decoration: none;
-        outline: 0
-    }
-
-    &[disabled] {
-        color: rgba(0,0,0,.25);
-        cursor: not-allowed;
-        pointer-events: none
-    }
-    &.ellipsis{
-      display: inline-block;
-      white-space: nowrap;
-      max-width: 100%;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
+  &[disabled] {
+    color: rgba(0, 0, 0, 0.25);
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+  &.ellipsis {
+    display: inline-block;
+    white-space: nowrap;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }
 </style>

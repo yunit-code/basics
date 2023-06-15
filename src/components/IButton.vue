@@ -5,74 +5,253 @@
     id：使用moduleObject.id，如果id不使用这个将会被idm-ctrl-id属性替换
     idm-ctrl-id：组件的id，这个必须不能为空
   -->
-  <div idm-ctrl="idm_module" :id="moduleObject.id" :idm-ctrl-id="moduleObject.id">
+  <div
+    idm-ctrl="idm_module"
+    :id="moduleObject.id"
+    :idm-ctrl-id="moduleObject.id"
+    v-if="componentVisibleStatus"
+  >
     <!--
       组件内部容器
       增加class="drag_container" 必选
       idm-ctrl-id：组件的id，这个必须不能为空
       idm-container-index  组件的内部容器索引，不重复唯一且不变，必选
     -->
-    <a-button @click="buttonClickHandle" :loading="isLoading" :type="propData.buttonType" v-if="propData.defaultStatus!='hidden'" v-show="showBtn" :disabled="propData.defaultStatus=='disabled'" :size="propData.size||'default'" :shape="propData.shape">
-      <svg class="button-svg-icon" v-if="propData.icon&&propData.icon.length>0" aria-hidden="true">
-          <use :xlink:href="`#${propData.icon[0]}`"></use>
-      </svg>{{propData.label}}
+    <a-button
+      @click="buttonClickHandle"
+      :loading="isLoading"
+      :type="propData.buttonType"
+      :disabled="propData.disabledOpen"
+      :size="propData.size || 'default'"
+      :shape="propData.shape"
+    >
+      <template v-if="buttonData.iconName">
+        <i
+          :class="`${buttonData.familyStr + buttonData.iconName}`"
+          v-if="propData.iconType == 'iconfont'"
+          :style="iconStyleObject"
+        ></i>
+        <svg
+          class="button-svg-icon"
+          :style="iconStyleObject"
+          aria-hidden="true"
+        >
+          <use :xlink:href="`#${buttonData.iconName}`"></use>
+        </svg> </template
+      >{{ buttonData.buttonText }}
     </a-button>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'IButton',
-  data(){
+  name: "IButton",
+  data() {
     return {
-      errorMessage:"",
-      thisValue:"",
-      moduleObject:{},
-      propData:this.$root.propData.compositeAttr||{
-        shape:"default"
+      errorMessage: "",
+      thisValue: "",
+      moduleObject: {},
+      propData: this.$root.propData.compositeAttr || {
+        shape: "default",
       },
-      isLoading:false,
-      lastReceiveMessage:null,
-      showBtn:true
-    }
+      isLoading: false,
+      lastReceiveMessage: null,
+      componentVisibleStatus: false,
+      isErrorStatus: false,
+      iconStyleObject: {},
+      buttonData: {
+        buttonText: "",
+        iconName: "",
+        familyStr: "",
+      },
+      functionParam: {
+        linkMessageObject: null,
+        customFunData: null,
+        pageInterfaceData: null,
+        dataSourceData: null,
+      },
+    };
   },
-  props: {
-  },
+  props: {},
   created() {
-    this.moduleObject = this.$root.moduleObject
+    this.moduleObject = this.$root.moduleObject;
+    this.setButtonText();
+    this.setIconName();
     // console.log(this.moduleObject)
     // this.propData = testAttr;
     this.convertAttrToStyleObject();
+    this.initComponentStatus();
+    this.loadIconFile();
   },
-  mounted() {
-  },
+  mounted() {},
   destroyed() {},
-  methods:{
+  methods: {
+    // 加载css
+    loadIconFile() {
+      if (this.propData.iconfontUrl && this.propData.iconType == "iconfont") {
+        let baseUrl =
+          this.propData.iconfontUrl +
+          (this.propData.iconfontUrl.substring(
+            this.propData.iconfontUrl.length - 1,
+            this.propData.iconfontUrl.length
+          ) == "/"
+            ? ""
+            : "/");
+        IDM.http
+          .get(baseUrl + "iconfont.json", {})
+          .then((res) => {
+            if (!res.data) {
+              return;
+            }
+            //存在，加载css
+            IDM.module.loadCss(IDM.url.getWebPath(baseUrl + "iconfont.css"), true);
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+        // 自定义
+        const isCustom = this.propData.iconfontUrl ? true : false;
+        // 取自定义字段 默认 iconfont
+        let fontFamily =
+          isCustom && this.propData.iconFontFamily ? this.propData.iconFontFamily : "";
+        // 取自定义前缀 默认icon-
+        let prefix = isCustom && this.propData.iconPrefix ? this.propData.iconPrefix : "";
+        this.$set(this.buttonData, "familyStr", `${fontFamily} ${prefix}`);
+      }
+    },
+    /**
+     * 初始化控件的状态
+     */
+    initComponentStatus(
+      linkMessageObject,
+      customFunData,
+      pageInterfaceData,
+      dataSourceData
+    ) {
+      if (
+        this.moduleObject.env == undefined ||
+        this.moduleObject.env == "develop"
+      ) {
+        this.componentVisibleStatus = true;
+        return;
+      }
+      this.functionParam.linkMessageObject = linkMessageObject;
+      this.functionParam.customFunData = customFunData;
+      this.functionParam.pageInterfaceData = pageInterfaceData;
+      this.functionParam.dataSourceData = dataSourceData;
+      switch (this.propData.defaultStatus) {
+        case "default":
+          this.componentVisibleStatus = true;
+          break;
+        case "hidden":
+          this.componentVisibleStatus = false;
+          break;
+        case "custom":
+          if (
+            this.propData.statusCustomFunction &&
+            this.propData.statusCustomFunction.length
+          ) {
+            let result = IDM.invokeCustomFunctions.apply(this, [
+              this.propData.statusCustomFunction,
+              {
+                linkMessageObject,
+                customFunData,
+                pageInterfaceData,
+                dataSourceData,
+              },
+            ]);
+            this.componentVisibleStatus =
+              result && result.length > 0 && result[0] === true;
+          } else if (this.propData.statusExpression) {
+            this.componentVisibleStatus = IDM.getExpressData(
+              this.propData.statusExpression,
+              {
+                linkMessageObject,
+                customFunData,
+                pageInterfaceData,
+                dataSourceData,
+              }
+            );
+          }
+          break;
+      }
+      ["iconColorCustomFunction", "iconSizeCustomFunction","iconNameCustomFunction"].forEach((funName) => {
+        if (this.propData[funName] && this.propData[funName].length) {
+          let styleData = IDM.invokeCustomFunctions.apply(this, [
+            this.propData[funName],
+            {
+              linkMessageObject,
+              customFunData,
+              pageInterfaceData,
+              dataSourceData,
+            },
+          ]);
+          if (styleData && styleData.length > 0) {
+            switch (funName) {
+              case "iconColorCustomFunction":
+                this.iconStyleObject.color = styleData[0] + " !important";
+                break;
+              case "iconSizeCustomFunction":
+                this.iconStyleObject["font-size"] = styleData[0] + " !important";
+                if(this.propData.iconType=="select"){
+                  this.iconStyleObject["max-height"] = styleData[0] + " !important";
+                  this.iconStyleObject["width"] = styleData[0] + " !important";
+                }
+                break;
+              case "iconNameCustomFunction":
+                this.setIconName(styleData[0]);
+                break;
+            }
+          }
+        }
+      });
+    },
+    setButtonText(name) {
+      if (name) {
+        this.$set(this.buttonData, "buttonText", name);
+      } else if (this.propData.label) {
+        this.$set(this.buttonData, "buttonText", this.propData.label);
+      }
+    },
+    setIconName(name) {
+      if (name) {
+        this.$set(this.buttonData, "iconName", name);
+        // this.iconName = name;
+      }else if(this.propData.iconFontName && this.propData.iconType=="iconfont"){
+        this.$set(this.buttonData, "iconName", this.propData.iconFontName);
+      } else if (this.propData.icon && this.propData.icon.length > 0 && this.propData.iconType=="select") {
+        // this.iconName = this.propData.icon[0];
+        this.$set(this.buttonData, "iconName", this.propData.icon[0]);
+      }
+    },
     /**
      * 把属性转换成按钮的样式设置(active)
      */
-    convertAttrToButtonActiveStyle(){
+    convertAttrToButtonActiveStyle() {
       var styleObject = {};
-      const keyList=["borderActive","fontActive"];
+      const keyList = ["borderActive", "fontActive"];
       for (const iKey in keyList) {
         const key = keyList[iKey];
         if (this.propData.hasOwnProperty.call(this.propData, key)) {
           const element = this.propData[key];
-          if(!element&&element!==false&&element!=0){
+          if (!element && element !== false && element != 0) {
             continue;
           }
           switch (key) {
             case "borderActive":
-              IDM.style.setBorderStyle(styleObject, element)
+              IDM.style.setBorderStyle(styleObject, element);
               break;
             case "fontActive":
-              IDM.style.setFontStyle(styleObject, element)
-              if(element.fontSize&&element.fontSizeUnit){
-                window.IDM.setStyleToPageHead(this.moduleObject.id+" button:active .button-svg-icon",{
-                  "font-size":element.fontSize+element.fontSizeUnit,
-                  "max-height":element.fontSize+element.fontSizeUnit,
-                  "width":element.fontSize+element.fontSizeUnit,
-                });
+              IDM.style.setFontStyle(styleObject, element);
+              if (element.fontSize && element.fontSizeUnit) {
+                window.IDM.setStyleToPageHead(
+                  this.moduleObject.id + " button:active .button-svg-icon",
+                  {
+                    "font-size": element.fontSize + element.fontSizeUnit,
+                    "max-height": element.fontSize + element.fontSizeUnit,
+                    width: element.fontSize + element.fontSizeUnit,
+                  }
+                );
               }
               break;
           }
@@ -89,33 +268,39 @@ export default {
         bgRepeat: "bgRepeatActive",
         bgAttachment: "bgAttachmentActive",
       });
-      window.IDM.setStyleToPageHead(this.moduleObject.id+" button:active",styleObject);
+      window.IDM.setStyleToPageHead(
+        this.moduleObject.id + " button:active",
+        styleObject
+      );
     },
     /**
      * 把属性转换成按钮的样式设置(focus)
      */
-    convertAttrToButtonFocusStyle(){
+    convertAttrToButtonFocusStyle() {
       var styleObject = {};
-      const keyList=["borderFocus","fontFocus"];
+      const keyList = ["borderFocus", "fontFocus"];
       for (const iKey in keyList) {
         const key = keyList[iKey];
         if (this.propData.hasOwnProperty.call(this.propData, key)) {
           const element = this.propData[key];
-          if(!element&&element!==false&&element!=0){
+          if (!element && element !== false && element != 0) {
             continue;
           }
           switch (key) {
             case "borderFocus":
-              IDM.style.setBorderStyle(styleObject, element)
+              IDM.style.setBorderStyle(styleObject, element);
               break;
             case "fontFocus":
-              IDM.style.setFontStyle(styleObject, element)
-              if(element.fontSize&&element.fontSizeUnit){
-                window.IDM.setStyleToPageHead(this.moduleObject.id+" button:focus .button-svg-icon",{
-                  "font-size":element.fontSize+element.fontSizeUnit,
-                  "max-height":element.fontSize+element.fontSizeUnit,
-                  "width":element.fontSize+element.fontSizeUnit,
-                });
+              IDM.style.setFontStyle(styleObject, element);
+              if (element.fontSize && element.fontSizeUnit) {
+                window.IDM.setStyleToPageHead(
+                  this.moduleObject.id + " button:focus .button-svg-icon",
+                  {
+                    "font-size": element.fontSize + element.fontSizeUnit,
+                    "max-height": element.fontSize + element.fontSizeUnit,
+                    width: element.fontSize + element.fontSizeUnit,
+                  }
+                );
               }
               break;
           }
@@ -132,33 +317,39 @@ export default {
         bgRepeat: "bgRepeatFocus",
         bgAttachment: "bgAttachmentFocus",
       });
-      window.IDM.setStyleToPageHead(this.moduleObject.id+" button:focus",styleObject);
+      window.IDM.setStyleToPageHead(
+        this.moduleObject.id + " button:focus",
+        styleObject
+      );
     },
     /**
      * 把属性转换成按钮的样式设置(hover)
      */
-    convertAttrToButtonHoverStyle(){
+    convertAttrToButtonHoverStyle() {
       var styleObject = {};
-      const keyList=["borderHover","fontHover"];
+      const keyList = ["borderHover", "fontHover"];
       for (const iKey in keyList) {
         const key = keyList[iKey];
         if (this.propData.hasOwnProperty.call(this.propData, key)) {
           const element = this.propData[key];
-          if(!element&&element!==false&&element!=0){
+          if (!element && element !== false && element != 0) {
             continue;
           }
           switch (key) {
             case "borderHover":
-              IDM.style.setBorderStyle(styleObject, element)
+              IDM.style.setBorderStyle(styleObject, element);
               break;
             case "fontHover":
-              IDM.style.setFontStyle(styleObject, element)
-              if(element.fontSize&&element.fontSizeUnit){
-                window.IDM.setStyleToPageHead(this.moduleObject.id+" button:hover .button-svg-icon",{
-                  "font-size":element.fontSize+element.fontSizeUnit,
-                  "max-height":element.fontSize+element.fontSizeUnit,
-                  "width":element.fontSize+element.fontSizeUnit,
-                });
+              IDM.style.setFontStyle(styleObject, element);
+              if (element.fontSize && element.fontSizeUnit) {
+                window.IDM.setStyleToPageHead(
+                  this.moduleObject.id + " button:hover .button-svg-icon",
+                  {
+                    "font-size": element.fontSize + element.fontSizeUnit,
+                    "max-height": element.fontSize + element.fontSizeUnit,
+                    width: element.fontSize + element.fontSizeUnit,
+                  }
+                );
               }
               break;
           }
@@ -175,33 +366,39 @@ export default {
         bgRepeat: "bgRepeatHover",
         bgAttachment: "bgAttachmentHover",
       });
-      window.IDM.setStyleToPageHead(this.moduleObject.id+" button:hover",styleObject);
+      window.IDM.setStyleToPageHead(
+        this.moduleObject.id + " button:hover",
+        styleObject
+      );
     },
     /**
      * 把属性转换成按钮的样式设置(默认)
      */
-    convertAttrToButtonDefaultStyle(){
+    convertAttrToButtonDefaultStyle() {
       var styleObject = {};
-      const keyList=["borderDefault","fontDefault"];
+      const keyList = ["borderDefault", "fontDefault"];
       for (const iKey in keyList) {
         const key = keyList[iKey];
         if (this.propData.hasOwnProperty.call(this.propData, key)) {
           const element = this.propData[key];
-          if(!element&&element!==false&&element!=0){
+          if (!element && element !== false && element != 0) {
             continue;
           }
           switch (key) {
             case "borderDefault":
-              IDM.style.setBorderStyle(styleObject, element)
+              IDM.style.setBorderStyle(styleObject, element);
               break;
             case "fontDefault":
-              IDM.style.setFontStyle(styleObject, element)
-              if(element.fontSize&&element.fontSizeUnit){
-                window.IDM.setStyleToPageHead(this.moduleObject.id+" button .button-svg-icon",{
-                  "font-size":element.fontSize+element.fontSizeUnit,
-                  "max-height":element.fontSize+element.fontSizeUnit,
-                  "width":element.fontSize+element.fontSizeUnit,
-                });
+              IDM.style.setFontStyle(styleObject, element);
+              if (element.fontSize && element.fontSizeUnit) {
+                window.IDM.setStyleToPageHead(
+                  this.moduleObject.id + " button .button-svg-icon",
+                  {
+                    "font-size": element.fontSize + element.fontSizeUnit,
+                    "max-height": element.fontSize + element.fontSizeUnit,
+                    width: element.fontSize + element.fontSizeUnit,
+                  }
+                );
               }
               break;
           }
@@ -218,74 +415,85 @@ export default {
         bgRepeat: "bgRepeatDefault",
         bgAttachment: "bgAttachmentDefault",
       });
-      window.IDM.setStyleToPageHead(this.moduleObject.id+" button,.emptyclassname",styleObject);
+      window.IDM.setStyleToPageHead(
+        this.moduleObject.id + " button,.emptyclassname",
+        styleObject
+      );
     },
     /**
      * 把属性转换成按钮的样式设置(图标)
      */
-    convertAttrToButtonIconStyle(){
+    convertAttrToButtonIconStyle() {
       var styleObject = {};
-      const keyList=["iconColor"];
+      const keyList = ["iconColor"];
       for (const iKey in keyList) {
         const key = keyList[iKey];
         if (this.propData.hasOwnProperty.call(this.propData, key)) {
           const element = this.propData[key];
-          if(!element&&element!==false&&element!=0){
+          if (!element && element !== false && element != 0) {
             continue;
           }
           switch (key) {
             case "iconColor":
-              if(element&&element.hex8){
-                styleObject["color"]=IDM.hex8ToRgbaString(element.hex8);
+              if (element && element.hex8) {
+                styleObject["color"] = IDM.hex8ToRgbaString(element.hex8);
               }
           }
         }
       }
-      window.IDM.setStyleToPageHead(this.moduleObject.id+" .button-svg-icon",styleObject);
+      window.IDM.setStyleToPageHead(
+        this.moduleObject.id + " .button-svg-icon",
+        styleObject
+      );
     },
     /**
      * 把属性转换成按钮的样式设置(基础)
      */
-    convertAttrToButtonBaseStyle(){
+    convertAttrToButtonBaseStyle() {
       var styleObject = {};
-      const keyList=["width","height","box"];
+      const keyList = ["width", "height", "box"];
       for (const iKey in keyList) {
         const key = keyList[iKey];
         if (this.propData.hasOwnProperty.call(this.propData, key)) {
           const element = this.propData[key];
-          if(!element&&element!==false&&element!=0){
+          if (!element && element !== false && element != 0) {
             continue;
           }
           switch (key) {
             case "width":
             case "height":
-              if(element!="auto"){
-                styleObject[key]=element;
+              if (element != "auto") {
+                styleObject[key] = element;
               }
               break;
             case "box":
-              IDM.style.setBoxStyle(styleObject, element)
+              IDM.style.setBoxStyle(styleObject, element);
               break;
           }
         }
       }
-      window.IDM.setStyleToPageHead(this.moduleObject.id+" button",styleObject);
+      window.IDM.setStyleToPageHead(
+        this.moduleObject.id + " button",
+        styleObject
+      );
     },
     /**
      * 提供父级组件调用的刷新prop数据组件
      */
-    propDataWatchHandle(propData){
-      this.propData = propData.compositeAttr||{};
+    propDataWatchHandle(propData) {
+      this.propData = propData.compositeAttr || {};
+      this.setButtonText();
+      this.setIconName();
       this.convertAttrToStyleObject();
     },
     /**
      * 把属性转换成样式对象
      */
-    convertAttrToStyleObject(){
+    convertAttrToStyleObject() {
       //默认值
       this.convertAttrToButtonBaseStyle();
       //样式设置下面四种状态:
-      if(this.propData.buttonType=="custom"){
+      if (this.propData.buttonType == "custom") {
         //默认
         this.convertAttrToButtonDefaultStyle();
         //hover
@@ -297,105 +505,125 @@ export default {
       }
       //图标、图标颜色
       this.convertAttrToButtonIconStyle();
-      
+
       // 获取数据
-      this.initData()
-      this.handleButtonShow(this.propData)
+      this.initData();
     },
     /**
      * 加载动态数据
      */
-    initData(){
+    initData() {
       let that = this;
       //所有地址的url参数转换
       var params = that.commonParam();
       switch (this.propData.dataSourceType) {
         case "customInterface":
-          this.propData.customInterfaceUrl&&window.IDM.http.get(this.propData.customInterfaceUrl,params)
-          .then((res) => {
-            that.$set(that.propData,"label",that.getExpressData("resultData",that.propData.dataFiled,res.data));
-          })
-          .catch(function (error) {
-            
-          });
+          this.propData.customInterfaceUrl &&
+            window.IDM.http
+              .get(this.propData.customInterfaceUrl, params)
+              .then((res) => {
+                that.setButtonText(
+                  that.getExpressData(
+                    "resultData",
+                    that.propData.dataFiled,
+                    res.data
+                  )
+                );
+                that.initComponentStatus(null, null, null, res.data);
+              })
+              .catch(function (error) {});
+          break;
+        case "datasource":
+          if (
+            this.propData.dataSourceSelectData &&
+            this.propData.dataSourceSelectData.length
+          ) {
+            IDM.datasource.request(
+              this.propData.dataSourceSelectData[0].id,
+              {
+                moduleObject: this.moduleObject,
+                param: this.commonParam(),
+              },
+              function (resData) {
+                //这里是请求成功的返回结果
+                that.setLinkText(
+                  that.getExpressData(
+                    "resultData",
+                    that.propData.dataFiled,
+                    resData
+                  )
+                );
+
+                that.initComponentStatus(null, null, null, resData);
+              },
+              function (error) {
+                //这里是请求失败的返回结果
+                that.isErrorStatus = true;
+              }
+            );
+          }
           break;
         case "pageCommonInterface":
           //使用通用接口直接跳过，在setContextValue执行
           break;
         case "customFunction":
-          if(this.propData.customFunction&&this.propData.customFunction.length>0){
+          if (
+            this.propData.customFunction &&
+            this.propData.customFunction.length > 0
+          ) {
             var resValue = "";
             try {
-              resValue = window[this.propData.customFunction[0].name]&&window[this.propData.customFunction[0].name].call(this,{...params,...this.propData.customFunction[0].param,moduleObject:this.moduleObject});
-            } catch (error) {
-            }
-            that.propData.label = resValue;
+              resValue =
+                window[this.propData.customFunction[0].name] &&
+                window[this.propData.customFunction[0].name].call(this, {
+                  ...params,
+                  ...this.propData.customFunction[0].param,
+                  moduleObject: this.moduleObject,
+                });
+            } catch (error) {}
+            that.setButtonText(resValue);
+            that.initComponentStatus(null, resValue, null, null);
           }
           break;
       }
     },
     /**
-     * 交互功能：设置组件的上下文内容值
-     * @param {
-     *  type:"定义的类型，已知类型：pageCommonInterface（页面统一接口返回值）、"
-     *  key:"数据key标识，页面每个接口设置的数据集名称，方便识别获取自己需要的数据"
-     *  data:"数据集，内容为：字符串 or 数组 or 对象"
-     * }
-     */
-    setContextValue(object) {
-      console.log("统一接口设置的值", object);
-      if (object.type != "pageCommonInterface") {
-        return;
-      }
-      //这里使用的是子表，所以要循环匹配所有子表的属性然后再去设置修改默认值
-      if (object.key == this.propData.dataName) {
-        this.$set(this.propData,"label",this.getExpressData(this.propData.dataName,this.propData.dataFiled,object.data));
-      }
-      this.handleButtonShow(this.propData)
-    },
-    /**
      * 通用的获取表达式匹配后的结果
      */
-    getExpressData(dataName,dataFiled,resultData){
+    getExpressData(dataName, dataFiled, resultData) {
       //给defaultValue设置dataFiled的值
       var _defaultVal = undefined;
-      if(dataFiled){
-        var filedExp = dataFiled;
-        filedExp =
-          dataName +
-          (filedExp.startsWiths("[") ? "" : ".") +
-          filedExp;
-        var dataObject = { IDM: window.IDM };
-        dataObject[dataName] = resultData;
-        _defaultVal = window.IDM.express.replace.call(
-          this,
-          "@[" + filedExp + "]",
-          dataObject
-        );
+      if (dataFiled) {
+        _defaultVal = window.IDM.getExpressData(dataFiled, resultData);
       }
       //对结果进行再次函数自定义
-      if(this.propData.customFunction&&this.propData.customFunction.length>0){
+      if (
+        this.propData.customFunction &&
+        this.propData.customFunction.length > 0
+      ) {
         var params = this.commonParam();
         var resValue = "";
         try {
-          resValue = window[this.propData.customFunction[0].name]&&window[this.propData.customFunction[0].name].call(this,{
-            ...params,
-            ...this.propData.customFunction[0].param,
-            moduleObject:this.moduleObject,
-            expressData:_defaultVal,interfaceData:resultData
-          });
-        } catch (error) {
-        }
+          resValue =
+            window[this.propData.customFunction[0].name] &&
+            window[this.propData.customFunction[0].name].call(this, {
+              ...params,
+              ...this.propData.customFunction[0].param,
+              moduleObject: this.moduleObject,
+              expressData: _defaultVal,
+              interfaceData: resultData,
+            });
+        } catch (error) {}
         _defaultVal = resValue;
       }
-      
+
       return _defaultVal;
     },
     /**
      * 通用的url参数对象
      * 所有地址的url参数转换
      */
-    commonParam(){
+    commonParam() {
       let urlObject = IDM.url.queryObject();
       var params = {
         pageId:
@@ -409,18 +637,21 @@ export default {
     /**
      * 内部点击事件
      */
-    buttonClickHandle(e){
+    buttonClickHandle(e) {
       let that = this;
-      if(this.moduleObject.env=="develop"){
+      if (this.moduleObject.env == "develop") {
         //开发模式下不执行此事件
         return;
       }
-      if(that.propData.openLoading){
+      if (that.propData.openLoading) {
         that.isLoading = true;
       }
       //获取所有的URL参数、页面ID（pageId）、以及所有组件的返回值（用范围值去调用IDM提供的方法取出所有的组件值）
       let urlObject = window.IDM.url.queryObject(),
-      pageId = window.IDM.broadcast&&window.IDM.broadcast.pageModule?window.IDM.broadcast.pageModule.id:"";
+        pageId =
+          window.IDM.broadcast && window.IDM.broadcast.pageModule
+            ? window.IDM.broadcast.pageModule.id
+            : "";
       //自定义函数
       /**
        * [
@@ -428,29 +659,43 @@ export default {
        * ]
        */
       var clickFunction = this.propData.clickFunction;
-      clickFunction&&clickFunction.forEach(item=>{
-        window[item.name]&&window[item.name].call(this,{
-          routerId:this.moduleObject.routerId,
-          urlData:urlObject,
-          pageId,
-          customParam:item.param,
-          _this:this
+      clickFunction &&
+        clickFunction.forEach((item) => {
+          window[item.name] &&
+            window[item.name].call(this, {
+              routerId: this.moduleObject.routerId,
+              urlData: urlObject,
+              pageId,
+              customParam: item.param,
+              _this: this,
+              ...this.functionParam,
+            });
         });
-      })
-      if(!clickFunction||(clickFunction&&clickFunction.length==0)){
+      if (!clickFunction || (clickFunction && clickFunction.length == 0)) {
         that.isLoading = false;
       }
-      
-      if(this.propData.linkagePageModule&&this.propData.linkagePageModule.length>0){
+
+      if (
+        this.propData.linkagePageModule &&
+        this.propData.linkagePageModule.length > 0
+      ) {
         var moduleIdArray = [];
-        this.propData.linkagePageModule.forEach(item=>{moduleIdArray.push(item.moduleId)});
+        this.propData.linkagePageModule.forEach((item) => {
+          moduleIdArray.push(item.moduleId);
+        });
         this.sendBroadcastMessage({
-          type:"linkageClick",
-          message:null,
-          rangeModule:moduleIdArray,
-          messageKey:this.propData.messageKey
-        })
+          type: "linkageClick",
+          message: null,
+          rangeModule: moduleIdArray,
+          messageKey: this.propData.messageKey,
+        });
       }
+    },
+    showThisModuleHandle() {
+      this.componentVisibleStatus = true;
+    },
+    hideThisModuleHandle() {
+      this.componentVisibleStatus = false;
     },
     /**
      * 组件通信：接收消息的方法
@@ -460,30 +705,37 @@ export default {
      *  message:{发送的时候传输的消息对象数据}
      *  messageKey:"消息数据的key值，代表数据类型是什么，常用于表单交互上，比如通过这个key判断是什么数据"
      *  isAcross:如果为true则代表发送来源是其他页面的组件，默认为false
-     * } object 
+     * } object
      */
-    receiveBroadcastMessage(object){
-      console.log("按钮组件收到消息",object)
+    receiveBroadcastMessage(object) {
+      console.log("按钮组件收到消息", object);
       this.lastReceiveMessage = object;
-      if(object&&object.type=="linkageReload"){
-        this.initData()
-        this.handleButtonShow(this.propData)
+      if (object && object.type == "linkageReload") {
+        this.initData();
       }
-      if(object&&object.type=="linkageResult" && this.propData.dataSourceType === "receiveMessage"){
+
+      if (object && object.type == "linkageShowModule") {
+        this.showThisModuleHandle();
+      } else if (object && object.type == "linkageHideModule") {
+        this.hideThisModuleHandle();
+      } else if (
+        object &&
+        object.type == "linkageResult" &&
+        this.propData.dataSourceType === "receiveMessage" &&
+        (!this.propData.receiveMessageKey ||
+          (this.propData.receiveMessageKey &&
+            this.propData.receiveMessageKey.length == 0) ||
+          (this.propData.receiveMessageKey &&
+            IDM.type(this.propData.receiveMessageKey) == "array" &&
+            this.propData.receiveMessageKey.indexOf(object.messageKey) > -1) ||
+          (IDM.type(this.propData.receiveMessageKey) == "string" &&
+            this.propData.receiveMessageKey == object.messageKey))
+      ) {
         //结果格式化
-        if(this.propData.customFunction&&this.propData.customFunction.length>0){
-          //所有地址的url参数转换
-          var params = this.commonParam();
-          var resValue = "";
-          try {
-            resValue = window[this.propData.customFunction[0].name]&&window[this.propData.customFunction[0].name].call(this,{...params,...this.propData.customFunction[0].param,moduleObject:this.moduleObject,receiveData:object.message});
-          } catch (error) {
-          }
-          this.propData.label = resValue;
-        }else{
-          this.propData.label = object.message;
-        }
-        this.handleButtonShow(this.propData)
+        this.setButtonText(
+          this.getExpressData("", this.propData.dataFiled, object.message)
+        );
+        this.initComponentStatus(object, null, null, null);
       }
     },
     /**
@@ -495,10 +747,33 @@ export default {
      *  rangeModule:"为空发送给全部，根据配置的属性中设定的值（值的内容是组件的packageid数组），不取子表的，比如直接 this.$root.propData.compositeAttr["attrKey"]（注意attrKey是属性中定义的bindKey）,这里的格式为：['1','2']"",
      *  className:"指定的组件类型，比如只给待办组件发送，然后再去过滤上面的值"
      *  globalSend:如果为true则全站发送消息，注意全站rangeModule是无效的，只有className才有效，默认为false
-     * } object 
+     * } object
      */
-    sendBroadcastMessage(object){
-        window.IDM.broadcast&&window.IDM.broadcast.send(object);
+    sendBroadcastMessage(object) {
+      window.IDM.broadcast && window.IDM.broadcast.send(object);
+    },
+    /**
+     * 交互功能：设置组件的上下文内容值
+     * @param {
+     *  type:"定义的类型，已知类型：pageCommonInterface（页面统一接口返回值）、"
+     *  key:"数据key标识，页面每个接口设置的数据集名称，方便识别获取自己需要的数据"
+     *  data:"数据集，内容为：字符串 or 数组 or 对象"
+     * }
+     */
+    setContextValue(object) {
+      if (object.type != "pageCommonInterface") {
+        return;
+      }
+      if (object.key == this.propData.dataName) {
+        this.setButtonText(
+          this.getExpressData(
+            this.propData.dataName,
+            this.propData.dataFiled,
+            object.data
+          )
+        );
+        this.initComponentStatus(null, null, object.data, null);
+      }
     },
     /**
      * 交互功能：获取需要返回的值，返回格式如下
@@ -509,34 +784,27 @@ export default {
      *    data:{要返回的值，内容为：字符串 or 数组 or 对象},
      * }
      */
-    getContextValue(){
+    getContextValue() {},
+    getStyle(key) {
+      let styles = {};
+      switch (key) {
+        case "root":
+          break;
+        default:
+          break;
+      }
+      return styles;
     },
-    getStyle(key){
-        let styles = {};
-        switch (key) {
-            case "root":
-            break;
-            default:
-            break;
-        }
-        return styles;
-    },
-    // button is show
-    handleButtonShow(item) {
-      const funcName = this.propData?.showFunction?.[0]?.name
-      if (!funcName) return true
-      this.showBtn = window?.[funcName]?.call(this, item.key)
-    },
-  }
-}
+  },
+};
 </script>
 <style lang="scss"  scoped>
-.button-svg-icon{
-    font-size: 14px;
-    max-height: 14px;
-    width: 14px;
-    margin-right: 8px;
-    fill: currentColor;
-    vertical-align: middle;
+.button-svg-icon {
+  font-size: 14px;
+  max-height: 14px;
+  width: 14px;
+  margin-right: 8px;
+  fill: currentColor;
+  vertical-align: middle;
 }
 </style>

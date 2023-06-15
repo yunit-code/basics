@@ -76,6 +76,16 @@
                     "display":"@[iconType=='iconfont']"
                 },
                 {
+                    "type": "input",
+                    "layoutType": "inline",
+                    "text": "图标名称",
+                    "bindKey": "iconFontName",
+                    "desc": "设置iconfont图标的名称，如类名是iconfont icon-shouye则名称为shouye",
+                    "default": "",
+                    "placeholder": "请输入",
+                    "display":"@[iconType=='iconfont']"
+                },
+                {
                     "type": "colorPicker",
                     "layoutType": "inline",
                     "text": "颜色",
@@ -485,7 +495,7 @@
                             "layoutType": "block",
                             "text": "图标大小自定义函数",
                             "bindKey": "iconSizeCustomFunction",
-                            "desc": "当图标大小设置无法满足要求的时候可以通过此处的自定义函数来实现图标大小的动态个性化，接收参数格式为{...自定义的，linkMessageObject:联动的消息数据,customFunData:数据源为自定义函数返回数据,pageInterfaceData:页面统一接口的数据,dataSourceData:数据源的数据}，返回具体的颜色值，比如：#F1F1F1，rgba(0,0,0,0.2)，red 等",
+                            "desc": "当图标大小设置无法满足要求的时候可以通过此处的自定义函数来实现图标大小的动态个性化，接收参数格式为{...自定义的，linkMessageObject:联动的消息数据,customFunData:数据源为自定义函数返回数据,pageInterfaceData:页面统一接口的数据,dataSourceData:数据源的数据}，返回具体的图标大小，比如：12px，12%，12vw 等",
                             "multiple": false
                         }
                     ]

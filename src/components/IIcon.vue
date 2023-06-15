@@ -21,6 +21,7 @@
       <i
         :class="`${iconData.familyStr + iconData.iconName}`"
         v-if="propData.iconType == 'iconfont'"
+        :style="iconStyleObject"
       ></i>
       <svg
         @click="iconClickHandle"
@@ -179,8 +180,10 @@ export default {
                 break;
               case "iconSizeCustomFunction":
                 this.iconStyleObject["font-size"] = styleData[0] + " !important";
-                this.iconStyleObject["max-height"] = styleData[0] + " !important";
-                this.iconStyleObject["width"] = styleData[0] + " !important";
+                if(this.propData.iconType=="select"){
+                  this.iconStyleObject["max-height"] = styleData[0] + " !important";
+                  this.iconStyleObject["width"] = styleData[0] + " !important";
+                }
                 break;
             }
           }
@@ -191,7 +194,9 @@ export default {
       if (name) {
         this.$set(this.iconData, "iconName", name);
         // this.iconName = name;
-      } else if (this.propData.icon && this.propData.icon.length > 0) {
+      }else if(this.propData.iconFontName && this.propData.iconType=="iconfont"){
+        this.$set(this.iconData, "iconName", this.propData.iconFontName);
+      } else if (this.propData.icon && this.propData.icon.length > 0 && this.propData.iconType=="select") {
         // this.iconName = this.propData.icon[0];
         this.$set(this.iconData, "iconName", this.propData.icon[0]);
       }
@@ -254,8 +259,10 @@ export default {
               break;
             case "iconSize":
               styleObject["font-size"] = element + "px";
-              styleObject["max-height"] = element + "px";
-              styleObject["width"] = element + "px";
+              if(this.propData.iconType=="select"){
+                styleObject["max-height"] = element + "px";
+                styleObject["width"] = element + "px";
+              }
               break;
           }
         }

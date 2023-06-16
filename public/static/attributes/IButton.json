@@ -142,6 +142,14 @@
                     "default": {}
                 },
                 {
+                    "type": "inputNumber",
+                    "layoutType": "inline",
+                    "text": "图文间距",
+                    "bindKey": "iconRightNumber",
+                    "desc":"设置图标与文字之间的间距，默认为8px",
+                    "default": 8
+                },
+                {
                     "type": "radio",
                     "layoutType": "inline",
                     "text": "按钮类型",
@@ -1159,7 +1167,7 @@
                     "desc": "根据接口返回数据、页面接口结果集或者收到的联动消息数据的指定字段。比如以上获得数据结果的值为{data:{filedName:[{\"text\":\"\",\"value\":\"\",\"check\":true}]}}，则这里应该填写data.filedName；如果为非对象类型的，比如数组则直接配置 _idm_[0].data.filedName，比如为字符串或者其他的布尔值等则直接 _idm_",
                     "default": "",
                     "placeholder": "示例：data.filedName 或者 [0].data[0].filedName",
-                    "display": "@[dataSourceType!='customFunction'&&dataSourceType!='receiveMessage']"
+                    "display": "@[dataSourceType!='customFunction'&&dataSourceType!='none']"
                 },
                 {
                     "type": "actionSelect",

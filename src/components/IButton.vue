@@ -27,12 +27,13 @@
     >
       <template v-if="buttonData.iconName">
         <i
-          :class="`${buttonData.familyStr + buttonData.iconName}`"
+          :class="`button-svg-icon ${buttonData.familyStr + buttonData.iconName}`"
           v-if="propData.iconType == 'iconfont'"
           :style="iconStyleObject"
         ></i>
         <svg
-          class="button-svg-icon"
+          v-else
+          class="button-svg-icon button-svg-svg"
           :style="iconStyleObject"
           aria-hidden="true"
         >
@@ -82,6 +83,7 @@ export default {
     this.convertAttrToStyleObject();
     this.initComponentStatus();
     this.loadIconFile();
+    this.setIconRightNumber();
   },
   mounted() {},
   destroyed() {},
@@ -128,10 +130,7 @@ export default {
       pageInterfaceData,
       dataSourceData
     ) {
-      if (
-        this.moduleObject.env == undefined ||
-        this.moduleObject.env == "develop"
-      ) {
+      if (this.moduleObject.env == undefined || this.moduleObject.env == "develop") {
         this.componentVisibleStatus = true;
         return;
       }
@@ -175,7 +174,11 @@ export default {
           }
           break;
       }
-      ["iconColorCustomFunction", "iconSizeCustomFunction","iconNameCustomFunction"].forEach((funName) => {
+      [
+        "iconColorCustomFunction",
+        "iconSizeCustomFunction",
+        "iconNameCustomFunction",
+      ].forEach((funName) => {
         if (this.propData[funName] && this.propData[funName].length) {
           let styleData = IDM.invokeCustomFunctions.apply(this, [
             this.propData[funName],
@@ -193,7 +196,7 @@ export default {
                 break;
               case "iconSizeCustomFunction":
                 this.iconStyleObject["font-size"] = styleData[0] + " !important";
-                if(this.propData.iconType=="select"){
+                if (this.propData.iconType == "select") {
                   this.iconStyleObject["max-height"] = styleData[0] + " !important";
                   this.iconStyleObject["width"] = styleData[0] + " !important";
                 }
@@ -217,12 +220,19 @@ export default {
       if (name) {
         this.$set(this.buttonData, "iconName", name);
         // this.iconName = name;
-      }else if(this.propData.iconFontName && this.propData.iconType=="iconfont"){
+      } else if (this.propData.iconFontName && this.propData.iconType == "iconfont") {
         this.$set(this.buttonData, "iconName", this.propData.iconFontName);
-      } else if (this.propData.icon && this.propData.icon.length > 0 && this.propData.iconType=="select") {
+      } else if (
+        this.propData.icon &&
+        this.propData.icon.length > 0 &&
+        this.propData.iconType == "select"
+      ) {
         // this.iconName = this.propData.icon[0];
         this.$set(this.buttonData, "iconName", this.propData.icon[0]);
       }
+    },
+    setIconRightNumber() {
+      this.iconStyleObject["margin-right"] = this.propData.iconRightNumber + "px";
     },
     /**
      * 把属性转换成按钮的样式设置(active)
@@ -246,11 +256,13 @@ export default {
               if (element.fontSize && element.fontSizeUnit) {
                 window.IDM.setStyleToPageHead(
                   this.moduleObject.id + " button:active .button-svg-icon",
-                  {
-                    "font-size": element.fontSize + element.fontSizeUnit,
-                    "max-height": element.fontSize + element.fontSizeUnit,
-                    width: element.fontSize + element.fontSizeUnit,
-                  }
+                  this.propData.iconType == "iconfont"
+                    ? { "font-size": element.fontSize + element.fontSizeUnit }
+                    : {
+                        "font-size": element.fontSize + element.fontSizeUnit,
+                        "max-height": element.fontSize + element.fontSizeUnit,
+                        width: element.fontSize + element.fontSizeUnit,
+                      }
                 );
               }
               break;
@@ -268,10 +280,7 @@ export default {
         bgRepeat: "bgRepeatActive",
         bgAttachment: "bgAttachmentActive",
       });
-      window.IDM.setStyleToPageHead(
-        this.moduleObject.id + " button:active",
-        styleObject
-      );
+      window.IDM.setStyleToPageHead(this.moduleObject.id + " button:active", styleObject);
     },
     /**
      * 把属性转换成按钮的样式设置(focus)
@@ -295,11 +304,13 @@ export default {
               if (element.fontSize && element.fontSizeUnit) {
                 window.IDM.setStyleToPageHead(
                   this.moduleObject.id + " button:focus .button-svg-icon",
-                  {
-                    "font-size": element.fontSize + element.fontSizeUnit,
-                    "max-height": element.fontSize + element.fontSizeUnit,
-                    width: element.fontSize + element.fontSizeUnit,
-                  }
+                  this.propData.iconType == "iconfont"
+                    ? { "font-size": element.fontSize + element.fontSizeUnit }
+                    : {
+                        "font-size": element.fontSize + element.fontSizeUnit,
+                        "max-height": element.fontSize + element.fontSizeUnit,
+                        width: element.fontSize + element.fontSizeUnit,
+                      }
                 );
               }
               break;
@@ -317,10 +328,7 @@ export default {
         bgRepeat: "bgRepeatFocus",
         bgAttachment: "bgAttachmentFocus",
       });
-      window.IDM.setStyleToPageHead(
-        this.moduleObject.id + " button:focus",
-        styleObject
-      );
+      window.IDM.setStyleToPageHead(this.moduleObject.id + " button:focus", styleObject);
     },
     /**
      * 把属性转换成按钮的样式设置(hover)
@@ -344,11 +352,13 @@ export default {
               if (element.fontSize && element.fontSizeUnit) {
                 window.IDM.setStyleToPageHead(
                   this.moduleObject.id + " button:hover .button-svg-icon",
-                  {
-                    "font-size": element.fontSize + element.fontSizeUnit,
-                    "max-height": element.fontSize + element.fontSizeUnit,
-                    width: element.fontSize + element.fontSizeUnit,
-                  }
+                  this.propData.iconType == "iconfont"
+                    ? { "font-size": element.fontSize + element.fontSizeUnit }
+                    : {
+                        "font-size": element.fontSize + element.fontSizeUnit,
+                        "max-height": element.fontSize + element.fontSizeUnit,
+                        width: element.fontSize + element.fontSizeUnit,
+                      }
                 );
               }
               break;
@@ -366,10 +376,7 @@ export default {
         bgRepeat: "bgRepeatHover",
         bgAttachment: "bgAttachmentHover",
       });
-      window.IDM.setStyleToPageHead(
-        this.moduleObject.id + " button:hover",
-        styleObject
-      );
+      window.IDM.setStyleToPageHead(this.moduleObject.id + " button:hover", styleObject);
     },
     /**
      * 把属性转换成按钮的样式设置(默认)
@@ -393,11 +400,13 @@ export default {
               if (element.fontSize && element.fontSizeUnit) {
                 window.IDM.setStyleToPageHead(
                   this.moduleObject.id + " button .button-svg-icon",
-                  {
-                    "font-size": element.fontSize + element.fontSizeUnit,
-                    "max-height": element.fontSize + element.fontSizeUnit,
-                    width: element.fontSize + element.fontSizeUnit,
-                  }
+                  this.propData.iconType == "iconfont"
+                    ? { "font-size": element.fontSize + element.fontSizeUnit }
+                    : {
+                        "font-size": element.fontSize + element.fontSizeUnit,
+                        "max-height": element.fontSize + element.fontSizeUnit,
+                        width: element.fontSize + element.fontSizeUnit,
+                      }
                 );
               }
               break;
@@ -472,10 +481,7 @@ export default {
           }
         }
       }
-      window.IDM.setStyleToPageHead(
-        this.moduleObject.id + " button",
-        styleObject
-      );
+      window.IDM.setStyleToPageHead(this.moduleObject.id + " button", styleObject);
     },
     /**
      * 提供父级组件调用的刷新prop数据组件
@@ -484,6 +490,7 @@ export default {
       this.propData = propData.compositeAttr || {};
       this.setButtonText();
       this.setIconName();
+      this.setIconRightNumber();
       this.convertAttrToStyleObject();
     },
     /**
@@ -523,11 +530,7 @@ export default {
               .get(this.propData.customInterfaceUrl, params)
               .then((res) => {
                 that.setButtonText(
-                  that.getExpressData(
-                    "resultData",
-                    that.propData.dataFiled,
-                    res.data
-                  )
+                  that.getExpressData("resultData", that.propData.dataFiled, res.data)
                 );
                 that.initComponentStatus(null, null, null, res.data);
               })
@@ -547,11 +550,7 @@ export default {
               function (resData) {
                 //这里是请求成功的返回结果
                 that.setLinkText(
-                  that.getExpressData(
-                    "resultData",
-                    that.propData.dataFiled,
-                    resData
-                  )
+                  that.getExpressData("resultData", that.propData.dataFiled, resData)
                 );
 
                 that.initComponentStatus(null, null, null, resData);
@@ -567,10 +566,7 @@ export default {
           //使用通用接口直接跳过，在setContextValue执行
           break;
         case "customFunction":
-          if (
-            this.propData.customFunction &&
-            this.propData.customFunction.length > 0
-          ) {
+          if (this.propData.customFunction && this.propData.customFunction.length > 0) {
             var resValue = "";
             try {
               resValue =
@@ -597,10 +593,7 @@ export default {
         _defaultVal = window.IDM.getExpressData(dataFiled, resultData);
       }
       //对结果进行再次函数自定义
-      if (
-        this.propData.customFunction &&
-        this.propData.customFunction.length > 0
-      ) {
+      if (this.propData.customFunction && this.propData.customFunction.length > 0) {
         var params = this.commonParam();
         var resValue = "";
         try {
@@ -675,10 +668,7 @@ export default {
         that.isLoading = false;
       }
 
-      if (
-        this.propData.linkagePageModule &&
-        this.propData.linkagePageModule.length > 0
-      ) {
+      if (this.propData.linkagePageModule && this.propData.linkagePageModule.length > 0) {
         var moduleIdArray = [];
         this.propData.linkagePageModule.forEach((item) => {
           moduleIdArray.push(item.moduleId);
@@ -798,13 +788,16 @@ export default {
   },
 };
 </script>
-<style lang="scss"  scoped>
+<style lang="scss" scoped>
 .button-svg-icon {
   font-size: 14px;
-  max-height: 14px;
-  width: 14px;
   margin-right: 8px;
-  fill: currentColor;
-  vertical-align: middle;
+
+  &.button-svg-svg {
+    max-height: 14px;
+    width: 14px;
+    fill: currentColor;
+    vertical-align: middle;
+  }
 }
 </style>

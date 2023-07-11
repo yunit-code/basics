@@ -51,12 +51,12 @@ export default {
       propData: this.$root.propData.compositeAttr || {},
       componentVisibleStatus: false,
       isErrorStatus: false,
-      functionParam:{
-        linkMessageObject:null,
-        customFunData:null,
-        pageInterfaceData:null,
-        dataSourceData:null
-      }
+      functionParam: {
+        linkMessageObject: null,
+        customFunData: null,
+        pageInterfaceData: null,
+        dataSourceData: null,
+      },
     };
   },
   props: {},
@@ -135,7 +135,7 @@ export default {
      */
     convertAttrToStyleObject() {
       var styleObject = {};
-      const keyList=["box","font"];
+      const keyList = ["box", "font", "bgColor"];
       for (const iKey in keyList) {
         const key = keyList[iKey];
         if (this.propData.hasOwnProperty.call(this.propData, key)) {
@@ -147,13 +147,23 @@ export default {
             case "box":
               IDM.style.setBoxStyle(styleObject, element);
               break;
+            case "bgColor":
+              if (element && element.hex8) {
+                styleObject["background-color"] =
+                  IDM.hex8ToRgbaString(element.hex8) + "  !important";
+              }
+              break;
             case "font":
               IDM.style.setFontStyle(styleObject, element);
               break;
           }
         }
       }
-      IDM.style.setBackgroundStyle(styleObject, this.propData);
+      if (!this.propData.bgList?.bgList?.length) {
+        IDM.style.setBackgroundStyle(styleObject, this.propData);
+      } else if (Object.keys(this.propData.bgList.style).length) {
+        Object.assign(styleObject, this.propData.bgList.style);
+      }
       window.IDM.setStyleToPageHead(this.moduleObject.id, styleObject);
       //加载图片的样式对象
       this.convertAttrToImageStyleObject();
@@ -165,7 +175,7 @@ export default {
      */
     convertAttrToImageStyleObject() {
       var styleObject = {};
-      const keyList=["width","height","border","shadow"];
+      const keyList = ["width", "height", "border", "shadow"];
       for (const iKey in keyList) {
         const key = keyList[iKey];
         if (this.propData.hasOwnProperty.call(this.propData, key)) {
@@ -334,7 +344,7 @@ export default {
               pageId,
               customParam: item.param,
               _this: this,
-              ...this.functionParam
+              ...this.functionParam,
             });
         });
     },

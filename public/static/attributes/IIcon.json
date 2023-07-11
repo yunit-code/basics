@@ -177,16 +177,30 @@
                             "default": {}
                         },
                         {
+                            "type": "multiBackground",
+                            "text": "多背景图",
+                            "tabText": "背景[index]",
+                            "bindKey": "bgList",
+                            "desc":"支持同时设置多个背景图片、渐变色作为背景，使用此属性则背景图片的设置作废",
+                            "ctrlAttrObject":{
+                                "maxSize":10485760,
+                                "suffix":["jpg","jpeg","png","gif","bmp"]
+                            }
+                        },
+                        {
                             "type": "uploadImage",
                             "layoutType": "inline",
                             "text": "背景图片",
                             "bindKey": "bgImgUrl",
+                            "deleteStyle":true,
+                            "desc":"可输入图片地址或直接上传，该功能已废弃，请使用多背景图属性设置。",
                             "placeholder": "可输入图片地址或直接上传"
                         },
                         {
                             "type": "inputNumberUnit",
                             "layoutType": "inline",
                             "text": "横向偏移",
+                            "deleteStyle":true,
                             "bindKey": "positionX",
                             "dictionary": [
                                 {
@@ -208,6 +222,7 @@
                             "type": "inputNumberUnit",
                             "layoutType": "inline",
                             "text": "纵向偏移",
+                            "deleteStyle":true,
                             "bindKey": "positionY",
                             "dictionary": [
                                 {
@@ -229,6 +244,7 @@
                             "type": "radio",
                             "layoutType": "block",
                             "text": "背景大小",
+                            "deleteStyle":true,
                             "bindKey": "bgSize",
                             "dictionary": [
                                 {
@@ -251,6 +267,7 @@
                             "layoutType": "inline",
                             "text": "宽度",
                             "bindKey": "bgSizeWidth",
+                            "deleteStyle":true,
                             "dictionary": [
                                 {
                                     "label": "px",
@@ -272,6 +289,7 @@
                             "layoutType": "inline",
                             "text": "高度",
                             "bindKey": "bgSizeHeight",
+                            "deleteStyle":true,
                             "dictionary": [
                                 {
                                     "label": "px",
@@ -293,6 +311,7 @@
                             "layoutType": "block",
                             "text": "平铺模式",
                             "bindKey": "bgRepeat",
+                            "deleteStyle":true,
                             "dictionary": [
                                 {
                                     "label": "双向重复",
@@ -322,6 +341,7 @@
                             "layoutType": "inline",
                             "text": "背景模式",
                             "bindKey": "bgAttachment",
+                            "deleteStyle":true,
                             "dictionary": [
                                 {
                                     "label": "固定",
@@ -372,6 +392,13 @@
                 },
                 {
                     "key": "blue",
+                    "mainColor": {
+                        "hex": "#0073CA",
+                        "hex8": "#0073CAFF"
+                    }
+                },
+                {
+                    "key": "zwblue",
                     "mainColor": {
                         "hex": "#0086D9",
                         "hex8": "#0086D9FF"

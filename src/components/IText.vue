@@ -51,12 +51,12 @@ export default {
       componentVisibleStatus: false,
       isErrorStatus: false,
       fontStyleObject: {},
-      functionParam:{
-        linkMessageObject:null,
-        customFunData:null,
-        pageInterfaceData:null,
-        dataSourceData:null
-      }
+      functionParam: {
+        linkMessageObject: null,
+        customFunData: null,
+        pageInterfaceData: null,
+        dataSourceData: null,
+      },
     };
   },
   props: {},
@@ -194,7 +194,16 @@ export default {
     convertAttrToStyleObject() {
       var styleObject = {};
 
-      const keyList=["width","height","border","box","font","textShadow","overflow"];
+      const keyList = [
+        "width",
+        "height",
+        "border",
+        "box",
+        "font",
+        "textShadow",
+        "overflow",
+        "bgColor",
+      ];
       for (const iKey in keyList) {
         const key = keyList[iKey];
         if (this.propData.hasOwnProperty.call(this.propData, key)) {
@@ -213,6 +222,12 @@ export default {
             case "border":
               IDM.style.setBorderStyle(styleObject, element);
               break;
+            case "bgColor":
+              if (element && element.hex8) {
+                styleObject["background-color"] =
+                  IDM.hex8ToRgbaString(element.hex8) + "  !important";
+              }
+              break;
             case "font":
               IDM.style.setFontStyle(styleObject, element);
               break;
@@ -225,7 +240,11 @@ export default {
           }
         }
       }
-      IDM.style.setBackgroundStyle(styleObject, this.propData);
+      if (!this.propData.bgList?.bgList?.length) {
+        IDM.style.setBackgroundStyle(styleObject, this.propData);
+      } else if (Object.keys(this.propData.bgList.style).length) {
+        Object.assign(styleObject, this.propData.bgList.style);
+      }
       this.convertThemeListAttrToStyleObject();
       window.IDM.setStyleToPageHead(this.moduleObject.id, styleObject);
       this.initData();
@@ -421,7 +440,7 @@ export default {
               pageId,
               customParam: item.param,
               _this: this,
-              ...this.functionParam
+              ...this.functionParam,
             });
         });
     },

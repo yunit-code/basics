@@ -50,12 +50,12 @@ export default {
       componentVisibleStatus: false,
       isErrorStatus: false,
       iconStyleObject: {},
-      functionParam:{
-        linkMessageObject:null,
-        customFunData:null,
-        pageInterfaceData:null,
-        dataSourceData:null
-      }
+      functionParam: {
+        linkMessageObject: null,
+        customFunData: null,
+        pageInterfaceData: null,
+        dataSourceData: null,
+      },
     };
   },
   props: {},
@@ -180,7 +180,7 @@ export default {
                 break;
               case "iconSizeCustomFunction":
                 this.iconStyleObject["font-size"] = styleData[0] + " !important";
-                if(this.propData.iconType=="select"){
+                if (this.propData.iconType == "select") {
                   this.iconStyleObject["max-height"] = styleData[0] + " !important";
                   this.iconStyleObject["width"] = styleData[0] + " !important";
                 }
@@ -194,9 +194,13 @@ export default {
       if (name) {
         this.$set(this.iconData, "iconName", name);
         // this.iconName = name;
-      }else if(this.propData.iconFontName && this.propData.iconType=="iconfont"){
+      } else if (this.propData.iconFontName && this.propData.iconType == "iconfont") {
         this.$set(this.iconData, "iconName", this.propData.iconFontName);
-      } else if (this.propData.icon && this.propData.icon.length > 0 && this.propData.iconType=="select") {
+      } else if (
+        this.propData.icon &&
+        this.propData.icon.length > 0 &&
+        this.propData.iconType == "select"
+      ) {
         // this.iconName = this.propData.icon[0];
         this.$set(this.iconData, "iconName", this.propData.icon[0]);
       }
@@ -214,7 +218,7 @@ export default {
      */
     convertAttrToStyleObject() {
       var styleObject = {};
-      const keyList=["box","border"];
+      const keyList = ["box", "border", "bgColor"];
       for (const iKey in keyList) {
         const key = keyList[iKey];
         if (this.propData.hasOwnProperty.call(this.propData, key)) {
@@ -226,13 +230,23 @@ export default {
             case "box":
               IDM.style.setBoxStyle(styleObject, element);
               break;
+            case "bgColor":
+              if (element && element.hex8) {
+                styleObject["background-color"] =
+                  IDM.hex8ToRgbaString(element.hex8) + "  !important";
+              }
+              break;
             case "border":
               IDM.style.setBorderStyle(styleObject, element);
               break;
           }
         }
       }
-      IDM.style.setBackgroundStyle(styleObject, this.propData);
+      if (!this.propData.bgList?.bgList?.length) {
+        IDM.style.setBackgroundStyle(styleObject, this.propData);
+      } else if (Object.keys(this.propData.bgList.style).length) {
+        Object.assign(styleObject, this.propData.bgList.style);
+      }
       window.IDM.setStyleToPageHead(this.moduleObject.id, styleObject);
       //加载图片的样式对象
       this.convertAttrToIconStyleObject();
@@ -243,7 +257,7 @@ export default {
      */
     convertAttrToIconStyleObject() {
       var styleObject = {};
-      const keyList=["iconColor","iconSize"];
+      const keyList = ["iconColor", "iconSize"];
       for (const iKey in keyList) {
         const key = keyList[iKey];
         if (this.propData.hasOwnProperty.call(this.propData, key)) {
@@ -259,7 +273,7 @@ export default {
               break;
             case "iconSize":
               styleObject["font-size"] = element + "px";
-              if(this.propData.iconType=="select"){
+              if (this.propData.iconType == "select") {
                 styleObject["max-height"] = element + "px";
                 styleObject["width"] = element + "px";
               }
@@ -456,7 +470,7 @@ export default {
               pageId,
               customParam: item.param,
               _this: this,
-              ...this.functionParam
+              ...this.functionParam,
             });
         });
     },

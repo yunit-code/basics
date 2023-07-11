@@ -239,7 +239,7 @@ export default {
      */
     convertAttrToButtonActiveStyle() {
       var styleObject = {};
-      const keyList = ["borderActive", "fontActive"];
+      const keyList = ["borderActive", "fontActive", "bgColorActive"];
       for (const iKey in keyList) {
         const key = keyList[iKey];
         if (this.propData.hasOwnProperty.call(this.propData, key)) {
@@ -250,6 +250,12 @@ export default {
           switch (key) {
             case "borderActive":
               IDM.style.setBorderStyle(styleObject, element);
+              break;
+            case "bgColorActive":
+              if (element && element.hex8) {
+                styleObject["background-color"] =
+                  IDM.hex8ToRgbaString(element.hex8) + "  !important";
+              }
               break;
             case "fontActive":
               IDM.style.setFontStyle(styleObject, element);
@@ -269,17 +275,21 @@ export default {
           }
         }
       }
-      IDM.style.setBackgroundStyle(styleObject, this.propData, {
-        bgSize: "bgSizeActive",
-        bgSizeWidth: "bgSizeWidthActive",
-        bgSizeHeight: "bgSizeHeightActive",
-        positionX: "positionXActive",
-        positionY: "positionYActive",
-        bgColor: "bgColorActive",
-        bgImgUrl: "bgImgUrlActive",
-        bgRepeat: "bgRepeatActive",
-        bgAttachment: "bgAttachmentActive",
-      });
+      if (!this.propData.bgListActive?.bgList?.length) {
+        IDM.style.setBackgroundStyle(styleObject, this.propData, {
+          bgSize: "bgSizeActive",
+          bgSizeWidth: "bgSizeWidthActive",
+          bgSizeHeight: "bgSizeHeightActive",
+          positionX: "positionXActive",
+          positionY: "positionYActive",
+          bgColor: "",
+          bgImgUrl: "bgImgUrlActive",
+          bgRepeat: "bgRepeatActive",
+          bgAttachment: "bgAttachmentActive",
+        });
+      } else if (Object.keys(this.propData.bgListActive.style).length) {
+        Object.assign(styleObject, this.propData.bgListActive.style);
+      }
       window.IDM.setStyleToPageHead(this.moduleObject.id + " button:active", styleObject);
     },
     /**
@@ -287,7 +297,7 @@ export default {
      */
     convertAttrToButtonFocusStyle() {
       var styleObject = {};
-      const keyList = ["borderFocus", "fontFocus"];
+      const keyList = ["borderFocus", "fontFocus", "bgColorFocus"];
       for (const iKey in keyList) {
         const key = keyList[iKey];
         if (this.propData.hasOwnProperty.call(this.propData, key)) {
@@ -298,6 +308,12 @@ export default {
           switch (key) {
             case "borderFocus":
               IDM.style.setBorderStyle(styleObject, element);
+              break;
+            case "bgColorFocus":
+              if (element && element.hex8) {
+                styleObject["background-color"] =
+                  IDM.hex8ToRgbaString(element.hex8) + "  !important";
+              }
               break;
             case "fontFocus":
               IDM.style.setFontStyle(styleObject, element);
@@ -317,17 +333,22 @@ export default {
           }
         }
       }
-      IDM.style.setBackgroundStyle(styleObject, this.propData, {
-        bgSize: "bgSizeFocus",
-        bgSizeWidth: "bgSizeWidthFocus",
-        bgSizeHeight: "bgSizeHeightFocus",
-        positionX: "positionXFocus",
-        positionY: "positionYFocus",
-        bgColor: "bgColorFocus",
-        bgImgUrl: "bgImgUrlFocus",
-        bgRepeat: "bgRepeatFocus",
-        bgAttachment: "bgAttachmentFocus",
-      });
+      if (!this.propData.bgListFocus?.bgList?.length) {
+        IDM.style.setBackgroundStyle(styleObject, this.propData, {
+          bgSize: "bgSizeFocus",
+          bgSizeWidth: "bgSizeWidthFocus",
+          bgSizeHeight: "bgSizeHeightFocus",
+          positionX: "positionXFocus",
+          positionY: "positionYFocus",
+          bgColor: "",
+          bgImgUrl: "bgImgUrlFocus",
+          bgRepeat: "bgRepeatFocus",
+          bgAttachment: "bgAttachmentFocus",
+        });
+      } else if (Object.keys(this.propData.bgListFocus.style).length) {
+        Object.assign(styleObject, this.propData.bgListFocus.style);
+      }
+
       window.IDM.setStyleToPageHead(this.moduleObject.id + " button:focus", styleObject);
     },
     /**
@@ -335,7 +356,7 @@ export default {
      */
     convertAttrToButtonHoverStyle() {
       var styleObject = {};
-      const keyList = ["borderHover", "fontHover"];
+      const keyList = ["borderHover", "fontHover", "bgColorHover"];
       for (const iKey in keyList) {
         const key = keyList[iKey];
         if (this.propData.hasOwnProperty.call(this.propData, key)) {
@@ -346,6 +367,12 @@ export default {
           switch (key) {
             case "borderHover":
               IDM.style.setBorderStyle(styleObject, element);
+              break;
+            case "bgColorHover":
+              if (element && element.hex8) {
+                styleObject["background-color"] =
+                  IDM.hex8ToRgbaString(element.hex8) + "  !important";
+              }
               break;
             case "fontHover":
               IDM.style.setFontStyle(styleObject, element);
@@ -365,17 +392,21 @@ export default {
           }
         }
       }
-      IDM.style.setBackgroundStyle(styleObject, this.propData, {
-        bgSize: "bgSizeHover",
-        bgSizeWidth: "bgSizeWidthHover",
-        bgSizeHeight: "bgSizeHeightHover",
-        positionX: "positionXHover",
-        positionY: "positionYHover",
-        bgColor: "bgColorHover",
-        bgImgUrl: "bgImgUrlHover",
-        bgRepeat: "bgRepeatHover",
-        bgAttachment: "bgAttachmentHover",
-      });
+      if (!this.propData.bgListHover?.bgList?.length) {
+        IDM.style.setBackgroundStyle(styleObject, this.propData, {
+          bgSize: "bgSizeHover",
+          bgSizeWidth: "bgSizeWidthHover",
+          bgSizeHeight: "bgSizeHeightHover",
+          positionX: "positionXHover",
+          positionY: "positionYHover",
+          bgColor: "",
+          bgImgUrl: "bgImgUrlHover",
+          bgRepeat: "bgRepeatHover",
+          bgAttachment: "bgAttachmentHover",
+        });
+      } else if (Object.keys(this.propData.bgListHover.style).length) {
+        Object.assign(styleObject, this.propData.bgListHover.style);
+      }
       window.IDM.setStyleToPageHead(this.moduleObject.id + " button:hover", styleObject);
     },
     /**
@@ -383,7 +414,7 @@ export default {
      */
     convertAttrToButtonDefaultStyle() {
       var styleObject = {};
-      const keyList = ["borderDefault", "fontDefault"];
+      const keyList = ["borderDefault", "fontDefault", "bgColorDefault"];
       for (const iKey in keyList) {
         const key = keyList[iKey];
         if (this.propData.hasOwnProperty.call(this.propData, key)) {
@@ -394,6 +425,12 @@ export default {
           switch (key) {
             case "borderDefault":
               IDM.style.setBorderStyle(styleObject, element);
+              break;
+            case "bgColorDefault":
+              if (element && element.hex8) {
+                styleObject["background-color"] =
+                  IDM.hex8ToRgbaString(element.hex8) + "  !important";
+              }
               break;
             case "fontDefault":
               IDM.style.setFontStyle(styleObject, element);
@@ -413,17 +450,21 @@ export default {
           }
         }
       }
-      IDM.style.setBackgroundStyle(styleObject, this.propData, {
-        bgSize: "bgSizeDefault",
-        bgSizeWidth: "bgSizeWidthDefault",
-        bgSizeHeight: "bgSizeHeightDefault",
-        positionX: "positionXDefault",
-        positionY: "positionYDefault",
-        bgColor: "bgColorDefault",
-        bgImgUrl: "bgImgUrlDefault",
-        bgRepeat: "bgRepeatDefault",
-        bgAttachment: "bgAttachmentDefault",
-      });
+      if (!this.propData.bgListDefault?.bgList?.length) {
+        IDM.style.setBackgroundStyle(styleObject, this.propData, {
+          bgSize: "bgSizeDefault",
+          bgSizeWidth: "bgSizeWidthDefault",
+          bgSizeHeight: "bgSizeHeightDefault",
+          positionX: "positionXDefault",
+          positionY: "positionYDefault",
+          bgColor: "",
+          bgImgUrl: "bgImgUrlDefault",
+          bgRepeat: "bgRepeatDefault",
+          bgAttachment: "bgAttachmentDefault",
+        });
+      } else if (Object.keys(this.propData.bgListDefault.style).length) {
+        Object.assign(styleObject, this.propData.bgListDefault.style);
+      }
       window.IDM.setStyleToPageHead(
         this.moduleObject.id + " button,.emptyclassname",
         styleObject

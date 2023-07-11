@@ -70,10 +70,7 @@ export default {
       pageInterfaceData,
       dataSourceData
     ) {
-      if (
-        this.moduleObject.env == undefined ||
-        this.moduleObject.env == "develop"
-      ) {
+      if (this.moduleObject.env == undefined || this.moduleObject.env == "develop") {
         this.componentVisibleStatus = true;
         return;
       }
@@ -130,7 +127,7 @@ export default {
      */
     convertAttrToLinkActiveStyle() {
       var styleObject = {};
-      const keyList = ["borderActive", "fontActive"];
+      const keyList = ["borderActive", "fontActive", "bgColorActive"];
       for (const iKey in keyList) {
         const key = keyList[iKey];
         if (this.propData.hasOwnProperty.call(this.propData, key)) {
@@ -141,6 +138,12 @@ export default {
           switch (key) {
             case "borderActive":
               IDM.style.setBorderStyle(styleObject, element);
+              break;
+            case "bgColorActive":
+              if (element && element.hex8) {
+                styleObject["background-color"] =
+                  IDM.hex8ToRgbaString(element.hex8) + "  !important";
+              }
               break;
             case "fontActive":
               IDM.style.setFontStyle(styleObject, element);
@@ -158,28 +161,29 @@ export default {
           }
         }
       }
-      IDM.style.setBackgroundStyle(styleObject, this.propData, {
-        bgSize: "bgSizeActive",
-        bgSizeWidth: "bgSizeWidthActive",
-        bgSizeHeight: "bgSizeHeightActive",
-        positionX: "positionXActive",
-        positionY: "positionYActive",
-        bgColor: "bgColorActive",
-        bgImgUrl: "bgImgUrlActive",
-        bgRepeat: "bgRepeatActive",
-        bgAttachment: "bgAttachmentActive",
-      });
-      window.IDM.setStyleToPageHead(
-        this.moduleObject.id + " a:active",
-        styleObject
-      );
+      if (!this.propData.bgListActive?.bgList?.length) {
+        IDM.style.setBackgroundStyle(styleObject, this.propData, {
+          bgSize: "bgSizeActive",
+          bgSizeWidth: "bgSizeWidthActive",
+          bgSizeHeight: "bgSizeHeightActive",
+          positionX: "positionXActive",
+          positionY: "positionYActive",
+          bgColor: "",
+          bgImgUrl: "bgImgUrlActive",
+          bgRepeat: "bgRepeatActive",
+          bgAttachment: "bgAttachmentActive",
+        });
+      } else if (Object.keys(this.propData.bgListActive.style).length) {
+        Object.assign(styleObject, this.propData.bgListActive.style);
+      }
+      window.IDM.setStyleToPageHead(this.moduleObject.id + " a:active", styleObject);
     },
     /**
      * 把属性转换成超链接的样式设置(focus)
      */
     convertAttrToLinkFocusStyle() {
       var styleObject = {};
-      const keyList = ["borderFocus", "fontFocus"];
+      const keyList = ["borderFocus", "fontFocus", "bgColorFocus"];
       for (const iKey in keyList) {
         const key = keyList[iKey];
         if (this.propData.hasOwnProperty.call(this.propData, key)) {
@@ -190,6 +194,12 @@ export default {
           switch (key) {
             case "borderFocus":
               IDM.style.setBorderStyle(styleObject, element);
+              break;
+            case "bgColorFocus":
+              if (element && element.hex8) {
+                styleObject["background-color"] =
+                  IDM.hex8ToRgbaString(element.hex8) + "  !important";
+              }
               break;
             case "fontFocus":
               IDM.style.setFontStyle(styleObject, element);
@@ -207,28 +217,29 @@ export default {
           }
         }
       }
-      IDM.style.setBackgroundStyle(styleObject, this.propData, {
-        bgSize: "bgSizeFocus",
-        bgSizeWidth: "bgSizeWidthFocus",
-        bgSizeHeight: "bgSizeHeightFocus",
-        positionX: "positionXFocus",
-        positionY: "positionYFocus",
-        bgColor: "bgColorFocus",
-        bgImgUrl: "bgImgUrlFocus",
-        bgRepeat: "bgRepeatFocus",
-        bgAttachment: "bgAttachmentFocus",
-      });
-      window.IDM.setStyleToPageHead(
-        this.moduleObject.id + " a:focus",
-        styleObject
-      );
+      if (!this.propData.bgListFocus?.bgList?.length) {
+        IDM.style.setBackgroundStyle(styleObject, this.propData, {
+          bgSize: "bgSizeFocus",
+          bgSizeWidth: "bgSizeWidthFocus",
+          bgSizeHeight: "bgSizeHeightFocus",
+          positionX: "positionXFocus",
+          positionY: "positionYFocus",
+          bgColor: "bgColorFocus",
+          bgImgUrl: "bgImgUrlFocus",
+          bgRepeat: "bgRepeatFocus",
+          bgAttachment: "bgAttachmentFocus",
+        });
+      } else if (Object.keys(this.propData.bgListFocus.style).length) {
+        Object.assign(styleObject, this.propData.bgListFocus.style);
+      }
+      window.IDM.setStyleToPageHead(this.moduleObject.id + " a:focus", styleObject);
     },
     /**
      * 把属性转换成超链接的样式设置(hover)
      */
     convertAttrToLinkHoverStyle() {
       var styleObject = {};
-      const keyList = ["borderHover", "fontHover"];
+      const keyList = ["borderHover", "fontHover", "bgColorHover"];
       for (const iKey in keyList) {
         const key = keyList[iKey];
         if (this.propData.hasOwnProperty.call(this.propData, key)) {
@@ -239,6 +250,12 @@ export default {
           switch (key) {
             case "borderHover":
               IDM.style.setBorderStyle(styleObject, element);
+              break;
+            case "bgColorHover":
+              if (element && element.hex8) {
+                styleObject["background-color"] =
+                  IDM.hex8ToRgbaString(element.hex8) + "  !important";
+              }
               break;
             case "fontHover":
               IDM.style.setFontStyle(styleObject, element);
@@ -256,28 +273,29 @@ export default {
           }
         }
       }
-      IDM.style.setBackgroundStyle(styleObject, this.propData, {
-        bgSize: "bgSizeHover",
-        bgSizeWidth: "bgSizeWidthHover",
-        bgSizeHeight: "bgSizeHeightHover",
-        positionX: "positionXHover",
-        positionY: "positionYHover",
-        bgColor: "bgColorHover",
-        bgImgUrl: "bgImgUrlHover",
-        bgRepeat: "bgRepeatHover",
-        bgAttachment: "bgAttachmentHover",
-      });
-      window.IDM.setStyleToPageHead(
-        this.moduleObject.id + " a:hover",
-        styleObject
-      );
+      if (!this.propData.bgListHover?.bgList?.length) {
+        IDM.style.setBackgroundStyle(styleObject, this.propData, {
+          bgSize: "bgSizeHover",
+          bgSizeWidth: "bgSizeWidthHover",
+          bgSizeHeight: "bgSizeHeightHover",
+          positionX: "positionXHover",
+          positionY: "positionYHover",
+          bgColor: "bgColorHover",
+          bgImgUrl: "bgImgUrlHover",
+          bgRepeat: "bgRepeatHover",
+          bgAttachment: "bgAttachmentHover",
+        });
+      } else if (Object.keys(this.propData.bgListHover.style).length) {
+        Object.assign(styleObject, this.propData.bgListHover.style);
+      }
+      window.IDM.setStyleToPageHead(this.moduleObject.id + " a:hover", styleObject);
     },
     /**
      * 把属性转换成超链接的样式设置(默认)
      */
     convertAttrToLinkDefaultStyle() {
       var styleObject = {};
-      const keyList = ["borderDefault", "fontDefault"];
+      const keyList = ["borderDefault", "fontDefault", "bgColorDefault"];
       for (const iKey in keyList) {
         const key = keyList[iKey];
         if (this.propData.hasOwnProperty.call(this.propData, key)) {
@@ -288,6 +306,12 @@ export default {
           switch (key) {
             case "borderDefault":
               IDM.style.setBorderStyle(styleObject, element);
+              break;
+            case "bgColorDefault":
+              if (element && element.hex8) {
+                styleObject["background-color"] =
+                  IDM.hex8ToRgbaString(element.hex8) + "  !important";
+              }
               break;
             case "fontDefault":
               IDM.style.setFontStyle(styleObject, element);
@@ -305,17 +329,21 @@ export default {
           }
         }
       }
-      IDM.style.setBackgroundStyle(styleObject, this.propData, {
-        bgSize: "bgSizeDefault",
-        bgSizeWidth: "bgSizeWidthDefault",
-        bgSizeHeight: "bgSizeHeightDefault",
-        positionX: "positionXDefault",
-        positionY: "positionYDefault",
-        bgColor: "bgColorDefault",
-        bgImgUrl: "bgImgUrlDefault",
-        bgRepeat: "bgRepeatDefault",
-        bgAttachment: "bgAttachmentDefault",
-      });
+      if (!this.propData.bgListDefault?.bgList?.length) {
+        IDM.style.setBackgroundStyle(styleObject, this.propData, {
+          bgSize: "bgSizeDefault",
+          bgSizeWidth: "bgSizeWidthDefault",
+          bgSizeHeight: "bgSizeHeightDefault",
+          positionX: "positionXDefault",
+          positionY: "positionYDefault",
+          bgColor: "bgColorDefault",
+          bgImgUrl: "bgImgUrlDefault",
+          bgRepeat: "bgRepeatDefault",
+          bgAttachment: "bgAttachmentDefault",
+        });
+      } else if (Object.keys(this.propData.bgListDefault.style).length) {
+        Object.assign(styleObject, this.propData.bgListDefault.style);
+      }
       window.IDM.setStyleToPageHead(this.moduleObject.id + " a", styleObject);
     },
     /**
@@ -389,11 +417,7 @@ export default {
                 //res.data
 
                 that.setLinkText(
-                  that.getExpressData(
-                    "resultData",
-                    that.propData.dataFiled,
-                    res.data
-                  )
+                  that.getExpressData("resultData", that.propData.dataFiled, res.data)
                 );
                 that.initComponentStatus(null, null, null, res.data);
                 // that.propData.fontContent = ;
@@ -415,11 +439,7 @@ export default {
               function (resData) {
                 //这里是请求成功的返回结果
                 that.setLinkText(
-                  that.getExpressData(
-                    "resultData",
-                    that.propData.dataFiled,
-                    resData
-                  )
+                  that.getExpressData("resultData", that.propData.dataFiled, resData)
                 );
 
                 that.initComponentStatus(null, null, null, resData);
@@ -435,10 +455,7 @@ export default {
           //使用通用接口直接跳过，在setContextValue执行
           break;
         case "customFunction":
-          if (
-            this.propData.customFunction &&
-            this.propData.customFunction.length > 0
-          ) {
+          if (this.propData.customFunction && this.propData.customFunction.length > 0) {
             var resValue = "";
             try {
               resValue =
@@ -465,10 +482,7 @@ export default {
         _defaultVal = window.IDM.getExpressData(dataFiled, resultData);
       }
       //对结果进行再次函数自定义
-      if (
-        this.propData.customFunction &&
-        this.propData.customFunction.length > 0
-      ) {
+      if (this.propData.customFunction && this.propData.customFunction.length > 0) {
         var params = this.commonParam();
         var resValue = "";
         try {
@@ -521,9 +535,7 @@ export default {
         if (this.propData.openNewPage) {
           window.open(window.IDM.url.getWebPath(this.propData.linkUrl));
         } else {
-          window.location.href = window.IDM.url.getWebPath(
-            this.propData.linkUrl
-          );
+          window.location.href = window.IDM.url.getWebPath(this.propData.linkUrl);
         }
       }
       //自定义函数

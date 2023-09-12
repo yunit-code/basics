@@ -12,8 +12,12 @@
       idm-ctrl-id：组件的id，这个必须不能为空
       idm-container-index  组件的内部容器索引，不重复唯一且不变，必选
     -->
-    AttrDemo
-    {{propData}}
+    <b>固定内容：</b>AttrDemo
+    <div>--------------------------------分割线-------------------------------------</div>
+    <b>当前所有属性：</b><br/>{{propData}}
+    <div>--------------------------------分割线-------------------------------------</div>
+    <b>testtitle结果展示（动态表达式）：</b><br/>
+    {{IDM.getAttrVarBindResultData(this,propData,'testtitle',moduleObject,'prefixTest',{varName:IDM.UUID(),functionTest:functionTest})}}
   </div>
 </template>
 
@@ -36,6 +40,9 @@ export default {
   },
   destroyed() {},
   methods:{
+    functionTest(var1,var2){
+      return var1+var2;
+    },
     /**
      * 提供父级组件调用的刷新prop数据组件
      */

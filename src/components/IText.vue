@@ -161,7 +161,7 @@ export default {
                 break;
               case "fontBgImgCustomFunction":
                 this.fontStyleObject["background-image"] = `url(${IDM.url.getWebPath(
-                  styleBgImg
+                  styleData[0]
                 )}) !important`;
                 break;
               case "fontBdColorCustomFunction":

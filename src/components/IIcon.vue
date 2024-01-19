@@ -20,7 +20,7 @@
     <template v-if="iconData.iconName">
       <i
         :class="`${iconData.familyStr + iconData.iconName}`"
-        v-if="propData.iconType == 'iconfont'"
+        v-if="propData.iconType == 'iconfont'&&propData.iconMode!='symbol'"
         :style="iconStyleObject"
       ></i>
       <svg
@@ -30,7 +30,7 @@
         v-else
         aria-hidden="true"
       >
-        <use :xlink:href="`#${iconData.iconName}`"></use>
+        <use :xlink:href="`#${propData.iconType == 'iconfont'&&propData.iconMode=='symbol'?(iconJsonInfo.css_prefix_text + iconData.iconName):iconData.iconName}`"></use>
       </svg>
     </template>
     <template v-else>请选择图标</template>
@@ -56,6 +56,7 @@ export default {
         pageInterfaceData: null,
         dataSourceData: null,
       },
+      iconJsonInfo:{}
     };
   },
   props: {},
@@ -78,6 +79,7 @@ export default {
   methods: {
     // 加载css
     loadIconFile() {
+      const that = this;
       if (this.propData.iconfontUrl && this.propData.iconType == "iconfont") {
         let baseUrl =
           this.propData.iconfontUrl +
@@ -93,8 +95,18 @@ export default {
             if (!res.data) {
               return;
             }
+            
+            that.iconJsonInfo = res.data;
             //存在，加载css
-            IDM.module.loadCss(IDM.url.getWebPath(baseUrl + "iconfont.css"), true);
+            IDM.http
+            .importFiles([
+              IDM.url.getWebPath(baseUrl + "iconfont."+(that.propData.iconMode=='symbol'?'js':'css'))
+            ])
+            .then(() => {
+              //加载完成
+            })
+            .catch((err) => {
+            });
           })
           .catch(function (error) {
             console.log(error);
@@ -273,10 +285,6 @@ export default {
               break;
             case "iconSize":
               styleObject["font-size"] = element + "px";
-              if (this.propData.iconType == "select") {
-                styleObject["max-height"] = element + "px";
-                styleObject["width"] = element + "px";
-              }
               break;
           }
         }
@@ -560,8 +568,8 @@ export default {
 <style lang="scss" scoped>
 .idm-module-svg-icon {
   font-size: 64px;
-  max-height: 64px;
-  width: 64px;
+  max-height: 1em;
+  width: 1em;
   fill: currentColor;
   vertical-align: middle;
 }

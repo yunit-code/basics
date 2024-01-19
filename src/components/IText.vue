@@ -24,13 +24,13 @@
     <div
       v-if="propData.renderStyle == 'html'"
       :class="{ ellipsis: propData.showEllipsis }"
-      :style="`line-clamp: ${propData.overRowCount};-webkit-line-clamp: ${propData.overRowCount};`"
+      :style="`line-clamp: ${propData.overRowCount};-webkit-line-clamp: ${propData.overRowCount};font-family: inherit;`"
       v-html="propData.fontContent"
     ></div>
     <div
       v-else
       :class="{ ellipsis: propData.showEllipsis }"
-      :style="`line-clamp: ${propData.overRowCount};-webkit-line-clamp: ${propData.overRowCount};`"
+      :style="`line-clamp: ${propData.overRowCount};-webkit-line-clamp: ${propData.overRowCount};font-family: inherit;`"
       v-text="propData.fontContent"
     ></div>
   </div>

@@ -66,6 +66,25 @@
                     "display":"@[iconType=='iconfont']"
                 },
                 {
+                    "type": "radio",
+                    "layoutType": "inline",
+                    "text": "图标模式",
+                    "bindKey": "iconMode",
+                    "desc":"用于设置图标的显示模式，class代表使用字体模式，无法适配多色图标。symbol代表使用svg模式，支持多色的图标",
+                    "dictionary": [
+                        {
+                            "label": "class",
+                            "value": "class"
+                        },
+                        {
+                            "label": "symbol",
+                            "value": "symbol"
+                        }
+                    ],
+                    "default": "symbol",
+                    "display":"@[iconType=='iconfont']"
+                },
+                {
                     "type": "input",
                     "layoutType": "inline",
                     "text": "图标字体",

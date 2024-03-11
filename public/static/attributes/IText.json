@@ -30,6 +30,14 @@
                 {
                     "type": "switch",
                     "layoutType": "inline",
+                    "text": "分组标题",
+                    "bindKey": "isGroupTitle",
+                    "desc":"用于标识是否分组标题，此作用在于表单的字段分组的时候会根据此处设置的自动获取为分组目录，取消则不会用做目录",
+                    "default": false
+                },
+                {
+                    "type": "switch",
+                    "layoutType": "inline",
                     "text": "提示title",
                     "bindKey": "htmlTitle",
                     "desc": "将内容显示为html标签的title，也就是鼠标放上去会有显示文本内容的文字",

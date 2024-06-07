@@ -51,8 +51,8 @@ export default {
     return {
       errorMessage: "",
       thisValue: "",
-      moduleObject: {},
-      propData: this.$root.propData.compositeAttr || {
+      moduleObject: this._moduleObject||{},
+      propData: this._propData?.compositeAttr||this.$root?.propData?.compositeAttr || {
         shape: "default",
       },
       isLoading: false,
@@ -73,9 +73,12 @@ export default {
       },
     };
   },
-  props: {},
+  props: {
+    _moduleObject: Object,
+    _propData: Object
+  },
   created() {
-    this.moduleObject = this.$root.moduleObject;
+    this.moduleObject = this._moduleObject||this.$root.moduleObject;
     this.setButtonText();
     this.setIconName();
     // console.log(this.moduleObject)
@@ -85,7 +88,14 @@ export default {
     this.loadIconFile();
     this.setIconRightNumber();
   },
-  mounted() {},
+  mounted() {
+    //直接使用组件此处的回调必须的
+    this._moduleObject&&IDM.callBackComponentMountComplete?.apply(this,[this._moduleObject]);
+    //赋值给window提供跨页面调用
+    this.$nextTick(function (params) {
+      window[this.moduleObject.packageid] = this;
+    });
+  },
   destroyed() {},
   methods: {
     // 加载css

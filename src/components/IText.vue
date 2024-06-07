@@ -41,8 +41,8 @@ export default {
   name: "IText",
   data() {
     return {
-      moduleObject: {},
-      propData: this.$root.propData.compositeAttr || {
+      moduleObject: this._moduleObject||{},
+      propData: this._propData?.compositeAttr||this.$root?.propData?.compositeAttr || {
         fontContent: "文本",
         renderStyle: "text",
         showEllipsis: true,
@@ -59,9 +59,12 @@ export default {
       },
     };
   },
-  props: {},
+  props: {
+    _moduleObject: Object,
+    _propData: Object
+  },
   created() {
-    this.moduleObject = this.$root.moduleObject;
+    this.moduleObject = this._moduleObject|| this.$root.moduleObject;
     // console.log(this.moduleObject)
     this.fontStyleObject.cursor =
       this.propData.clickFunction &&
@@ -73,6 +76,8 @@ export default {
     this.initComponentStatus();
   },
   mounted() {
+    //直接使用组件此处的回调必须的
+    this._moduleObject&&IDM.callBackComponentMountComplete?.apply(this,[this._moduleObject]);
     //赋值给window提供跨页面调用
     this.$nextTick(function (params) {
       window[this.moduleObject.packageid] = this;

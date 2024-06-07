@@ -43,8 +43,8 @@ export default {
   name: "IIcon",
   data() {
     return {
-      moduleObject: {},
-      propData: this.$root.propData.compositeAttr || {},
+      moduleObject: this._moduleObject||{},
+      propData: this._propData?.compositeAttr||this.$root?.propData?.compositeAttr || {},
       //最终显示的图标
       iconData: { iconName: "", familyStr: "" },
       componentVisibleStatus: false,
@@ -59,9 +59,12 @@ export default {
       iconJsonInfo:{}
     };
   },
-  props: {},
+  props: {
+    _moduleObject: Object,
+    _propData: Object
+  },
   created() {
-    this.moduleObject = this.$root.moduleObject;
+    this.moduleObject = this._moduleObject|| this.$root.moduleObject;
     this.setIconName();
     this.iconStyleObject.cursor =
       this.propData.clickFunction &&
@@ -74,7 +77,10 @@ export default {
     this.initComponentStatus();
     this.loadIconFile();
   },
-  mounted() {},
+  mounted() {
+    //直接使用组件此处的回调必须的
+    this._moduleObject&&IDM.callBackComponentMountComplete?.apply(this,[this._moduleObject]);
+  },
   destroyed() {},
   methods: {
     // 加载css

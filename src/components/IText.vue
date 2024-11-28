@@ -403,6 +403,7 @@ export default {
           resValue =
             window[this.propData.customFunction[0].name] &&
             window[this.propData.customFunction[0].name].call(this, {
+              _this:this,
               ...params,
               ...this.propData.customFunction[0].param,
               moduleObject: this.moduleObject,

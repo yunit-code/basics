@@ -194,13 +194,13 @@ export default {
           if (styleData && styleData.length > 0) {
             switch (funName) {
               case "iconColorCustomFunction":
-                this.iconStyleObject.color = styleData[0] + " !important";
+                this.$set(this.iconStyleObject, "color", styleData[0] + " !important")
                 break;
               case "iconSizeCustomFunction":
-                this.iconStyleObject["font-size"] = styleData[0] + " !important";
+                this.$set(this.iconStyleObject, "font-size", styleData[0] + " !important")
                 if (this.propData.iconType == "select") {
-                  this.iconStyleObject["max-height"] = styleData[0] + " !important";
-                  this.iconStyleObject["width"] = styleData[0] + " !important";
+                  this.$set(this.iconStyleObject, "max-width", styleData[0] + " !important");
+                  this.$set(this.iconStyleObject, "width", styleData[0] + " !important");
                 }
                 break;
             }

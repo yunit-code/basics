@@ -57,6 +57,7 @@ export default {
         pageInterfaceData: null,
         dataSourceData: null,
       },
+      conditionObject: {},
     };
   },
   props: {
@@ -319,6 +320,38 @@ export default {
       let that = this;
       //所有地址的url参数转换
       var params = that.commonParam();
+      //接收其他组件联动参数
+      if ( this.propData.linkageParamList && this.propData.linkageParamList.length > 0 ) {
+        this.propData.linkageParamList.forEach((lpitem) => {
+          if (Object.keys(lpitem).length > 0) {
+            if (lpitem.msgKey && this.conditionObject[lpitem.msgKey]) {
+              if (lpitem.paramFun && lpitem.paramFun.length > 0) {
+                //有函数
+                try {
+                  params[lpitem.paramKey || lpitem.msgKey] =
+                    window[lpitem.paramFun[0].name] &&
+                    window[lpitem.paramFun[0].name].call(this, {
+                      ...params,
+                      ...lpitem.paramFun[0].param,
+                      moduleObject: this.moduleObject,
+                      paramValue: this.conditionObject[lpitem.msgKey],
+                    });
+                } catch (error) {
+                  params[lpitem.paramKey || lpitem.msgKey] =
+                    typeof this.conditionObject[lpitem.msgKey] == "object"
+                      ? JSON.stringify(this.conditionObject[lpitem.msgKey])
+                      : this.conditionObject[lpitem.msgKey];
+                }
+              } else {
+                params[lpitem.paramKey || lpitem.msgKey] =
+                  typeof this.conditionObject[lpitem.msgKey] == "object"
+                    ? JSON.stringify(this.conditionObject[lpitem.msgKey])
+                    : this.conditionObject[lpitem.msgKey];
+              }
+            }
+          }
+        });
+      }
       switch (this.propData.dataSourceType) {
         case "customInterface":
           this.propData.customInterfaceUrl &&
@@ -346,7 +379,7 @@ export default {
               this.propData.dataSourceSelectData[0].id,
               {
                 moduleObject: this.moduleObject,
-                param: this.commonParam(),
+                param: params,
               },
               function (resData) {
                 //这里是请求成功的返回结果
@@ -492,7 +525,13 @@ export default {
           this.getExpressData("", this.propData.dataFiled, object.message)
         );
         this.initComponentStatus(object, null, null, null);
+      } else if(object.type && object.type == "linkageDemand") {
+        this.onReInitDataMsgKey(object.message, object.messageKey);
       }
+    },
+    onReInitDataMsgKey(conditionObject, messageKey) {
+      this.conditionObject[messageKey] = conditionObject;
+      this.reload();
     },
     /**
      * 组件通信：发送消息的方法
